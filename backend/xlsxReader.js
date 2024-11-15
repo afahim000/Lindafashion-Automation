@@ -13,7 +13,7 @@ const fs = require('fs')
 const fsp = require('fs').promises
 const path = require('path')
 const exceljs = require('exceljs');
-const test =  async (PO, formFields) =>{
+const test =  async (PO, monitoringForm, formFields) =>{
     var workbook = new exceljs.Workbook();
     await workbook.xlsx.load(PO.buffer);
     var worksheet = workbook.getWorksheet(1)
@@ -128,27 +128,26 @@ const test =  async (PO, formFields) =>{
     }
 
     const writeBuffer = await writeTo.xlsx.writeBuffer();
-    const directory = path.join(__dirname, `${POnumber} ${value}.xlsx`);
+    const directory = path.join(`${__dirname}/ediUpload`, `${POnumber} ${value}.xlsx`);
     fs.writeFile(directory,writeBuffer,(error)=>{ error ? console.log(error): console.log('file saved')})
     //write to a workbook file
     const poMonitoringForm = new exceljs.Workbook();
     poMonitoringForm.clearThemes();
     const pmf = poMonitoringForm.getWorksheet(1);
-    //const buffer = fs.readFileSync(formFields.poMonitoring);
-  
-     await xlsxPopulate.fromFileAsync("C:/Users/ABRAR/Downloads/LF PO MONITORING 11.04.24 - Copy.xlsx").then((workbook)=>
+ 
+     await xlsxPopulate.fromFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalName}`).then((workbook)=>
     {
         const worksheet = workbook.sheet("PO DATA");
         const finalRow = worksheet.usedRange()._maxRowNumber
-        const dataRange = worksheet.range("A7:P331").value();
-        worksheet.range("A8:P332").value(dataRange)
+        const dataRange = worksheet.range(`A7:${finalRow}`).value();
+        worksheet.range(`A8:${finalRow + 1}`).value(dataRange)
         worksheet.range("A7:P7").value([[formFields.rep, "", POnumber, formFields.description, formFields.category,  poDate, deliveryDate, formFields.container, rowCounter -1, totalQty, totalCost,]])
         worksheet.cell("L7").formula(`(J7/50)*${formFields.multiplier}`);
-        return workbook.toFileAsync("test2.xlsx")
+        return workbook.toFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalName}`);
         
-
     }).then(data => {console.log('done')})
    
+    return {purchaseOrderDate: poDate,deliveryDate: deliveryDate}
 
 }
 

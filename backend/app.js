@@ -10,12 +10,16 @@ const PORT = 2000;
 
 
 
-app.post('/',upload.single('upload'),async (req, res) =>
+app.post('/',upload.array('upload'),async (req, res) =>
 {
 
-    const PO = req.file
+    const PO = req.file[0]
+    const monitoringForm = req.file[1]
     const textInputs = req.body
-    await reader.run(PO, textInputs);
+    const response = await reader.run(PO, monitoringForm, textInputs);
+    response.then((data)=>{
+        res.send(data)
+    });
    
 })
 
