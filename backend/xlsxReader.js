@@ -7,6 +7,8 @@ if the item counter matches the number on the first cell then extract the conten
 increment the counter if it matches the next row column A cell then extract contents like above
 repeat the steps for subsequent rows until the item counter number does not match any column A row number
 */
+
+const ediExplorer = require('./ediExplorer.js');
 const puppeteer = require('puppeteer');
 const xlsxPopulate = require('xlsx-populate')
 const fs = require('fs')
@@ -16,9 +18,8 @@ const exceljs = require('exceljs');
 const test =  async (PO, monitoringForm, formFields) =>{
     var workbook = new exceljs.Workbook();
     await workbook.xlsx.load(PO.buffer);
-    var worksheet = workbook.getWorksheet(1)
+    var worksheet = workbook.getWorksheet(1) || workbook.getWorksheet(2)
     const POnumber = worksheet.getCell('K1').value;
-    console.log(POnumber)
     let rowCounter = 1;
     const column = worksheet.getColumn(1);
     const column1= column.values;
@@ -127,27 +128,23 @@ const test =  async (PO, monitoringForm, formFields) =>{
         writeToSheet.addRow([items.itemNumber, items.itemNumber,"","","","","","",value,items.itemNumber, 18, "", 2.4, items.qty, items.dzn, 5, 5, 5, 6.5])
     }
 
-    const writeBuffer = await writeTo.xlsx.writeBuffer();
-    const directory = path.join(`${__dirname}/ediUpload`, `${POnumber} ${value}.xlsx`);
+    const writeBuffer = await writeTo.csv.writeBuffer();
+    const directory = path.join(`${__dirname}/ediUpload`, `${POnumber} ${value}.csv`);
     fs.writeFile(directory,writeBuffer,(error)=>{ error ? console.log(error): console.log('file saved')})
     //write to a workbook file
-    const poMonitoringForm = new exceljs.Workbook();
-    poMonitoringForm.clearThemes();
-    const pmf = poMonitoringForm.getWorksheet(1);
- 
-     await xlsxPopulate.fromFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalName}`).then((workbook)=>
+     await xlsxPopulate.fromFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`).then((workbook)=>
     {
         const worksheet = workbook.sheet("PO DATA");
         const finalRow = worksheet.usedRange()._maxRowNumber
-        const dataRange = worksheet.range(`A7:${finalRow}`).value();
-        worksheet.range(`A8:${finalRow + 1}`).value(dataRange)
+        console.log(`${finalRow}`);
+        const dataRange = worksheet.range(7,1,finalRow,16).value();
+        worksheet.range(7+1,1,finalRow+1,16).value(dataRange)
         worksheet.range("A7:P7").value([[formFields.rep, "", POnumber, formFields.description, formFields.category,  poDate, deliveryDate, formFields.container, rowCounter -1, totalQty, totalCost,]])
         worksheet.cell("L7").formula(`(J7/50)*${formFields.multiplier}`);
-        return workbook.toFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalName}`);
+        return workbook.toFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`);
         
     }).then(data => {console.log('done')})
-   
-    return {purchaseOrderDate: poDate,deliveryDate: deliveryDate}
+    return {POnumber: POnumber, purchaseOrderDate: poDate,deliveryDate: deliveryDate, person: value, factory: factory, phone: phone, filePath: directory}
 
 }
 

@@ -1,7 +1,7 @@
 import {useState} from 'react'
 
 export default function PO(){
-    const [response, setResponse] = useState(true)
+    const [response, setResponse] = useState([])
     async function handleSubmit(e)
     {
         e.preventDefault();
@@ -11,12 +11,28 @@ export default function PO(){
             {
                 method: 'POST',
                 body: formData
-            }).then((data)=>{
-                setResponse(data)
-            }).catch(error => console.log(error)).then(data => console.log(data))
+            }).then(async (response)=>
+            {
+                await response.json();
+                setResponse([response.POnumber, response.PoDate, response.deliveryDate])
+                return response.person;
+            })
+
+            const value = await fetch("http://localhost:2000/File",
+                {
+                    method: 'POST',
+                    body: response
+                }
+            )
+            
+
+ 
+                
+           
     }
     return(
         <>
+         
         <div id ="form-holder">
             <form onSubmit = {handleSubmit} enctype="multipart/form-data" >
                 <p style = {{fontSize : "30px", }}>Upload files below for automation</p>
@@ -27,17 +43,27 @@ export default function PO(){
                 <label for = "description">Description</label>
                 <input type = 'text' id = "description" name = "description"></input>
                 <label for = "multiplier">Multiplier</label>
-                <input type = 'number' id = "multiplier" name = "multiplier"></input>
+                <input type = 'text' inputmode = "decimal" id = "multiplier" name = "multiplier"></input>
                 <label for = "category">Category</label>
                 <input type = 'text' id = "category" name = "category"></input>
                 <label for = "upload">upload the *PURCHASE ORDER* here</label>
                 <input type = "file" id = "upload" name = "upload" accept=".xlsx" ></input>
-                <label for = "PO">upload the *MONITORING FORM* here</label>
-                <input type = "file" id = "POmonitoring" name = "upload"></input>
+                <label for = "upload">upload the *MONITORING FORM* here</label>
+                <input type = "file" id = "upload" name = "upload" accept=".xlsx"></input>
                 <button type="submit">Submit</button>
 
             </form>
+            <div>
+                <br></br>
+                <p style ={{fontSize: "30px"}}>Response Info</p>
+                <br></br>
+                <p>PO NUMBER: {(<h1>awaiting info </h1>) || response[0]}</p>
+                <br></br>
+                <p>PO DATE{(<h1>awaiting info </h1>) ||response[1]}</p>
+                <br></br>
+                <p>DELIVERY DATE{(<h1>awaiting info </h1>) || response[2]}</p>
             </div>
+        </div>
         </>
     )
 }
