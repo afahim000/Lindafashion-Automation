@@ -2,28 +2,70 @@ import {useState} from 'react'
 
 export default function PO(){
     const [response, setResponse] = useState([])
-    async function handleSubmit(e)
+    const [agent,setAgent] = useState(null);
+    const [filePath, setFilePath] = useState(null)
+    const [noError, setNoError] = useState(true)
+        async function handleSubmit(e)
     {
         e.preventDefault();
         const formData = new FormData(e.target);
-
+        try{
         const response = await fetch("http://localhost:2000",
             {
                 method: 'POST',
                 body: formData
-            }).then(async (response)=>
-            {
-                await response.json();
-                setResponse([response.POnumber, response.PoDate, response.deliveryDate])
-                return response.person;
             })
+            .then(async (answer) =>
+            {
+                const data = await answer.json();
+                setResponse([data.POnumber, data.PoDate, data.deliveryDate, data.filePath, data.person, data.factory, data.phone])
+                setFilePath(data.filePath);
+                return ({person: data.person, factory: data.factory, phone: data.phone})
+            })
+            .then(async(data)=>
+            {
+                console.log(data.person)
+                return await fetch("http://localhost:2000/edi",
+                    {
+                    method:'POST',
+                    header:
+                    {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                            person: data.person,
+                            factory: data.factory,
+                            phone: data.phone
+                        })
+                    }
+                )
+            })
+            .then(async(data)=>
+            {
+                const answer = data.json();
+                setAgent(answer.agentCode);
+                
+            })
+            .then()
+            {
+                const result = await fetch('http://localhost:2000/file',
+                    {
+                        method: "GET",
+                        body: filePath
+                    }
+                )
 
-            const value = await fetch("http://localhost:2000/File",
-                {
-                    method: 'POST',
-                    body: response
-                }
-            )
+                if(result)
+                    setNoError(true);
+
+            }
+        }
+        catch(error){
+            setNoError(false)
+            console.log(error);
+        }
+
+
             
 
  
@@ -32,7 +74,7 @@ export default function PO(){
     }
     return(
         <>
-         
+         {noError || (<h2 style = {{color: 'red'}}>SOMETHING WENT WRONG. YOU CAN REFRESH THE PAGE TO REMOVE THIS MESSAGE</h2>)}
         <div id ="form-holder">
             <form onSubmit = {handleSubmit} enctype="multipart/form-data" >
                 <p style = {{fontSize : "30px", }}>Upload files below for automation</p>
@@ -62,6 +104,8 @@ export default function PO(){
                 <p>PO DATE{(<h1>awaiting info </h1>) ||response[1]}</p>
                 <br></br>
                 <p>DELIVERY DATE{(<h1>awaiting info </h1>) || response[2]}</p>
+                <br></br>
+                <p>AGENT CODE{(<h1>awaiting info </h1>) || agent}</p>
             </div>
         </div>
         </>

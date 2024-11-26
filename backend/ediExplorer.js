@@ -222,9 +222,9 @@ const ediExplore = async(person, factory, phone)=>
                                 "new_factory_hdr_id": "",
                                 "old_factory_hdr_log_user": "",
                                 "new_factory_hdr_log_user": "ABRAR",
-                                "new_factory_hdr_agency_no": `${name}`,
+                                "new_factory_hdr_agency_no": `${person}`,
                                 "old_factory_hdr_agency_no": "",
-                                "new_factory_hdr_agency_name": `${name}`,
+                                "new_factory_hdr_agency_name": `${person}`,
                                 "old_factory_hdr_agency_name": "",
                                 "new_factory_hdr_agency_adrs1": "",
                                 "old_factory_hdr_agency_adrs1": "",
@@ -322,7 +322,7 @@ const ediExplore = async(person, factory, phone)=>
                             method: 'POST',
                         }
                     )
-                    const agentCode = name.toUpperCase()
+                    const agentCode = person.toUpperCase()
                     return {
                         response: response,
                         cookie: data.cookie,

@@ -19,7 +19,7 @@ const test =  async (PO, monitoringForm, formFields) =>{
     var workbook = new exceljs.Workbook();
     await workbook.xlsx.load(PO.buffer);
     var worksheet = workbook.getWorksheet(1) || workbook.getWorksheet(2)
-    const POnumber = worksheet.getCell('K1').value;
+    const POnumber = (worksheet.getCell('K1')).value;
     let rowCounter = 1;
     const column = worksheet.getColumn(1);
     const column1= column.values;
@@ -71,12 +71,13 @@ const test =  async (PO, monitoringForm, formFields) =>{
         }
     else if(cell.value === '联系电话:')
         {
-           phone = worksheet.getCell(cell.row , cell.col + 1).value
+           phone = worksheet.getCell(cell.row , cell.col + 1).value || ""
         }
     else{
 
         }
     })
+
     const browser = await puppeteer.launch({headless: false});
     const page = await browser.newPage();
     await page.goto('https://www.google.com/search?q=google+translate&rlz=1C1VDKB_enUS1113US1113&oq=google+translate&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIKCAEQABixAxiABDINCAIQABiDARixAxiABDIPCAMQABgUGIcCGLEDGIAEMgcIBBAAGIAEMgYIBRBFGD0yBggGEEUYPDIGCAcQRRhB0gEIMjEyOGowajeoAgCwAgA&sourceid=chrome&ie=UTF-8')
@@ -98,13 +99,13 @@ const test =  async (PO, monitoringForm, formFields) =>{
         }
         return translation;
     })
-
+    await page.goto('https://www.google.com/search?q=google+translate&rlz=1C1VDKB_enUS1113US1113&oq=google+translate&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIKCAEQABixAxiABDINCAIQABiDARixAxiABDIPCAMQABgUGIcCGLEDGIAEMgcIBBAAGIAEMgYIBRBFGD0yBggGEEUYPDIGCAcQRRhB0gEIMjEyOGowajeoAgCwAgA&sourceid=chrome&ie=UTF-8')
     await page.locator("#tw-source-text-ta").fill(factory);
 
     const factoryValue = await page.evaluate(async ()=>{
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        // Initialize the translated text and loop until it changes
+        //Initialize the translated text and loop until it changes
         let translation = '';
         for (let i = 0; i < 10; i++) { // Retry up to 10 times
             const element = document.querySelector("#tw-target-text > span.Y2IQFc");
@@ -130,21 +131,21 @@ const test =  async (PO, monitoringForm, formFields) =>{
 
     const writeBuffer = await writeTo.csv.writeBuffer();
     const directory = path.join(`${__dirname}/ediUpload`, `${POnumber} ${value}.csv`);
-    fs.writeFile(directory,writeBuffer,(error)=>{ error ? console.log(error): console.log('file saved')})
+    fs.writeFile(directory,writeBuffer,(error)=>{ error ? console.log(error): console.log('file saved')});
     //write to a workbook file
-     await xlsxPopulate.fromFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`).then((workbook)=>
+    await xlsxPopulate.fromFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`).then((workbook)=>
     {
         const worksheet = workbook.sheet("PO DATA");
         const finalRow = worksheet.usedRange()._maxRowNumber
-        console.log(`${finalRow}`);
         const dataRange = worksheet.range(7,1,finalRow,16).value();
         worksheet.range(7+1,1,finalRow+1,16).value(dataRange)
         worksheet.range("A7:P7").value([[formFields.rep, "", POnumber, formFields.description, formFields.category,  poDate, deliveryDate, formFields.container, rowCounter -1, totalQty, totalCost,]])
         worksheet.cell("L7").formula(`(J7/50)*${formFields.multiplier}`);
-        return workbook.toFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`);
-        
-    }).then(data => {console.log('done')})
-    return {POnumber: POnumber, purchaseOrderDate: poDate,deliveryDate: deliveryDate, person: value, factory: factory, phone: phone, filePath: directory}
+        return workbook.toFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`);    
+    })
+    .then(data => {console.log('done')})
+    const finale = {POnumber: POnumber, purchaseOrderDate: poDate,deliveryDate: deliveryDate, person: value, factory: factoryValue, phone: phone, filePath: directory}
+    return finale;
 
 }
 

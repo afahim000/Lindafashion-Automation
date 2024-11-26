@@ -14,41 +14,71 @@ const PORT = 2000;
 
 app.post('/',upload.array('upload', 2),async (req, res) =>
 {
+    try
+   {
     const PO = req.files[0]
     const monitoringForm = req.files[1]
     const textInputs = req.body
     
     const xlsxResponse = await reader.run(PO, monitoringForm, textInputs);
-    const ediResponse = await ediExplorer.run(xlsxResponse.person, xlsxResponse.factory, xlsxResponse,phone)
-
-    res.download()
+    //const ediResponse = await ediExplorer.run(xlsxResponse.person, xlsxResponse.factory, xlsxResponse,phone)
     //{POnumber: POnumber, purchaseOrderDate: poDate,deliveryDate: deliveryDate, person: value, factory: factory, phone: phone, attachedFile: writeBuffer}
-    //{response: response, cookie: data.cookie, agentCode: upperCaseName,}
-    //const finale = await finalUpload.run(ediResponse.cookie, xlsxResponse.attachedFile, xlsxResponse.POnumber, xlsxResponse.POdate, xlsxResponse.deliveryDate, ediResponse.agentCode)
-    res.send({POnumber: xlsxResponse.POnumber, poDate: xlsxResponse.poDate, deliveryDate: xlsxResponse.deliveryDate, person: xlsxResponse.person});
+    //{response: response, cookie: data.cookie, agentCode: upperCaseName,atta}
+    //const finale = await finalUpload.run(ediResponse.cookie, xlsxResponse.chedFile, xlsxResponse.POnumber, xlsxResponse.POdate, xlsxResponse.deliveryDate, ediResponse.agentCode)
+    res.send({POnumber: xlsxResponse.POnumber, poDate: xlsxResponse.poDate, deliveryDate: xlsxResponse.deliveryDate,filePath: xlsxResponse.filePath, person: xlsxResponse.person, factory: xlsxResponse.factory, phone: xlsxResponse.phone});
+   }
+   catch(error)
+   {
+    console.log(error);
+    res.status(500).json({
+        error: true,
+        message: 'Something went wrong',
+    })
 
-    
+   }
+
 }
    
 )
 
-app.post('/File',async (req, res)=>
+app.post('/edi',async (req, res)=>
 {
-    const response = await ediExplorer.run(req.body);
+    console.log(req.params)
+    try
+    {
+        const response = await ediExplorer.run(req.body.person, req.body.factory. req.body.phone);
+    }
+    catch(error)
+   {
+    console.log(error);
+    res.status(500).json({
+        error: true,
+        message: 'Something went wrong',
+    })
+
+   }
+    
+
+    
     
 })
 
-app.get('/',async()=>
+app.get('/file',(req, res)=>{
+    console.log(req.body);
+    res.download(req.body, (err)=>
     {
-        try{
-        const value = fs.readFileSync('./ediUpload/24326 Le Yuyan.csv')
-        //cookie, file, POnumber, poDate, deliveryDate
-        finalUpload.run('2ohmq5auug90p52d3scvpf7n23', value , '24299', '11/27/2024', '11/27/2024', '11/26/2024', 'D2-4911');
-        }catch(error)
-        {
-            console.log(error)
+        if (err) {
+            console.error('Error during download:', err);
+            res.status(500).json({
+                error: true,
+                message: 'Something went wrong',
+
+            })
         }
     })
+})
+
+
 app.listen(PORT,()=>{
     console.log("listening on port 2000")
 });
