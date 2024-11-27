@@ -144,6 +144,7 @@ const test =  async (PO, monitoringForm, formFields) =>{
         return workbook.toFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`);    
     })
     .then(data => {console.log('done')})
+    console.log(poDate);
     const finale = {POnumber: POnumber, purchaseOrderDate: poDate,deliveryDate: deliveryDate, person: value, factory: factoryValue, phone: phone, filePath: directory}
     return finale;
 

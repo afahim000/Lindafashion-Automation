@@ -323,6 +323,7 @@ const ediExplore = async(person, factory, phone)=>
                         }
                     )
                     const agentCode = person.toUpperCase()
+
                     return {
                         response: response,
                         cookie: data.cookie,
