@@ -78,7 +78,7 @@ const test =  async (PO, monitoringForm, formFields) =>{
         }
     })
 
-    const browser = await puppeteer.launch({headless: false});
+    const browser = await puppeteer.launch({headless: true});
     const page = await browser.newPage();
     await page.goto('https://www.google.com/search?q=google+translate&rlz=1C1VDKB_enUS1113US1113&oq=google+translate&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIKCAEQABixAxiABDINCAIQABiDARixAxiABDIPCAMQABgUGIcCGLEDGIAEMgcIBBAAGIAEMgYIBRBFGD0yBggGEEUYPDIGCAcQRRhB0gEIMjEyOGowajeoAgCwAgA&sourceid=chrome&ie=UTF-8')
 
@@ -139,8 +139,8 @@ const test =  async (PO, monitoringForm, formFields) =>{
         const finalRow = worksheet.usedRange()._maxRowNumber
         const dataRange = worksheet.range(7,1,finalRow,16).value();
         worksheet.range(7+1,1,finalRow+1,16).value(dataRange)
-        worksheet.range("A7:P7").value([[formFields.rep, "", POnumber, formFields.description, formFields.category,  poDate, deliveryDate, formFields.container, rowCounter -1, totalQty, totalCost,]])
-        worksheet.cell("L7").formula(`(J7/50)*${formFields.multiplier}`);
+        worksheet.range("A7:P7").value([[formFields.rep, "", POnumber, formFields.description, formFields.category,  poDate, deliveryDate, formFields.container, rowCounter -1, totalQty, totalCost, (totalQty / 50 * formFields.multiplier)]])
+        //worksheet.cell("L7").formula(`(J7/50)*${formFields.multiplier}`);
         return workbook.toFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`);    
     })
     .then(data => {console.log('done')})

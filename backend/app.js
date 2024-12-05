@@ -71,7 +71,8 @@ app.post('/file',(req, res)=>{
     console.log(req.body);
     const filePath = req.body.filePath;
     const path = filePath.replace(/\\/g, '/')
-    res.download("./ediUpload/24272 Li Gang.csv", (err)=>
+    const fileName = path.split('/')
+    res.download(`./ediUpload/${fileName[fileName.length -1]}`, (err)=>
     {
         if (err) {
             console.error('Error during download:', err);
@@ -82,6 +83,13 @@ app.post('/file',(req, res)=>{
             })
         }
     })
+})
+
+app.get('/',async (req, res)=>
+{
+    const value = await ediExplorer.run('MEOWSICLES', 'CHEWEY', '1019382392');
+    //console.log(value);
+    res.send(value);
 })
 
 

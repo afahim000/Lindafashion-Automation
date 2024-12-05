@@ -3,12 +3,19 @@ import {useState} from 'react'
 export default function PO(){
     const [response, setResponse] = useState([])
     const [agent,setAgent] = useState(null);
-    const [filePath, setFilePath] = useState(null)
     const [noError, setNoError] = useState(true)
     const [status, setStatus] = useState("IDLE");
-        async function handleSubmit(e)
+
+
+    
+    async function handleSubmit(e)
     {   
+        let filePath;
+        let varResponse;
+        let varAgent;
         setStatus("PENDING DATA...")
+        setResponse(["","","","","","",""])
+        setAgent(null);
         e.preventDefault();
         let formData = new FormData(e.target);
         try{
@@ -21,9 +28,9 @@ export default function PO(){
             .then(async (answer) =>
             {
                 const data = await answer.json();
-                console.log(data);
-                setResponse([data.POnumber, data.poDate, data.deliveryDate, data.filePath, data.person, data.factory, data.phone])
-                setFilePath(data.filePath);
+                varResponse = [data.POnumber, data.poDate, data.deliveryDate, data.filePath, data.person, data.factory, data.phone]
+                setResponse(varResponse)
+                filePath = data.filePath;
                 return ({person: data.person, factory: data.factory, phone: data.phone})
             })
             .then(async(data)=>
@@ -46,7 +53,8 @@ export default function PO(){
             .then(async(data)=>
             {
                 const answer = await data.json();
-                setAgent(answer.agentCode);
+                varAgent = answer.agentCode
+                setAgent(varAgent);
                 return;
                 
             })
@@ -62,33 +70,32 @@ export default function PO(){
                     }
                 )
 
-                if(result)
+                if(result.ok)
+                {
                     setNoError(true);
-
-                return result;
-
-
-
-
+                    setStatus("DONE!")
+                    const blob = await result.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', `AGENT ${varAgent} PONUMBER ${varResponse[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
             })
-
-            if(getFile)
-            {
-                setStatus("DONE!")
-                const blob = await getFile.blob();
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'UPLOAD_THIS_CSV_FILE_ONTO_EDI.csv');
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-            }
            
         }
         catch(error){
             setNoError(false)
             setStatus("ERROR")
+            setResponse(["","","","","","",""])
+            setAgent(null);
             console.log(error);
         }
 
@@ -127,7 +134,7 @@ export default function PO(){
                 {status === "IDLE" ? (<h1 style = {{color: 'gray', display: "inline-block"}}>IDLE</h1>) :
                 status === "ERROR" ? (<h1 style = {{color: 'red', display: "inline-block"}}>ERROR</h1>) :
                 status === "DONE!" ? (<h1 style = {{color: 'green', display: "inline-block"}}>DONE!</h1>) :
-                status === "PENDING..." ? (<h1 style = {{color: 'blue', display: "inline-block"}}>PENDING...</h1>) :
+                status === "PENDING DATA..." ? (<h1 style = {{color: 'blue', display: "inline-block"}}>PENDING DATA...</h1>) :
                 (<h1>WELCOME TO THE LAND OF IMPOSSIBLE WHERE LOGIC NO LONGER APPLIES</h1>)}</div>
                 
                 <br></br>
@@ -144,20 +151,4 @@ export default function PO(){
         </div>
         </>
     )
-}
-
-export const Munde = async (formData) =>
-{
-    const response1 = await fetch("frontend\public\copy of copy of copy of 24272 B2-3619 温岭饰品  KHC.xlsx");
-    const fileBlob = await response1.blob();
-    const file = new File([fileBlob], "sample.txt", { type: fileBlob.type });
-    formData.append("upload", file);
-
-
-    const response2 = await fetch("frontend\public\LF PO MONITORING 11.25.24.xlsx");
-    const fileBlob2 = await response2.blob();
-    const file2 = new File([fileBlob2], "sample.txt", { type: fileBlob2.type });
-    formData.append("upload", file2);
-
-    return formData;
 }
