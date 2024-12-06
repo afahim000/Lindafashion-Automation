@@ -29,7 +29,7 @@ const ediExplore = async(person, factory, phone)=>
 
         }
         
-    )
+         )
     .then((data)=>
         {
             //Extract cookie value
@@ -37,7 +37,7 @@ const ediExplore = async(person, factory, phone)=>
             const sessionId = cookieString.split(';')[0];
             return sessionId;
         })
-        .then(async (data)=>
+    .then(async (data)=>
         {
             //Authenticate
             const response = await fetch('https://edilindafashion.com/edibs/menu/login.php',
@@ -73,7 +73,7 @@ const ediExplore = async(person, factory, phone)=>
 
             return data;
         })
-        .then(async (data)=>
+    .then(async (data)=>
             {
                 //Go To factory agent header
 
@@ -108,8 +108,8 @@ const ediExplore = async(person, factory, phone)=>
                 );
 
                 return data;
-            })
-        .then(async (data)=>
+        })
+    .then(async (data)=>
         {
             const response = await fetch('https://edilindafashion.com/edibs/po/po_factory_hdr_aj.php', 
                 {
@@ -146,7 +146,7 @@ const ediExplore = async(person, factory, phone)=>
                 cookie: data,
                     }
         })
-        .then(async(data)=>
+    .then(async(data)=>
         {
 
             const html = await data.response.text()
@@ -177,7 +177,7 @@ const ediExplore = async(person, factory, phone)=>
             
 
         })
-        .then(async (data)=>
+    .then(async (data)=>
             {
 
                 if(data.agentCode)
@@ -340,11 +340,8 @@ const ediExplore = async(person, factory, phone)=>
                         agentCode: agentCode,
                             };
                 }
-            })
+        })
 
-        
-
-  
     return edi;
 }
 

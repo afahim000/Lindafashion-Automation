@@ -8,18 +8,57 @@ increment the counter if it matches the next row column A cell then extract cont
 repeat the steps for subsequent rows until the item counter number does not match any column A row number
 */
 
-const ediExplorer = require('./ediExplorer.js');
+
 const puppeteer = require('puppeteer');
 const xlsxPopulate = require('xlsx-populate')
 const fs = require('fs')
-const fsp = require('fs').promises
 const path = require('path')
 const exceljs = require('exceljs');
+
+
+
 const test =  async (PO, monitoringForm, formFields) =>{
-    var workbook = new exceljs.Workbook();
-    await workbook.xlsx.load(PO.buffer);
-    var worksheet = workbook.getWorksheet(1) || workbook.getWorksheet(2)
+    //read Purchase OrderFile
+    const worksheet = await readSheet(PO.buffer)
+
+    //Column 1 and Column 8 info respectively **rowCounter represents the end of the item info rows**
+    const {data, poDate, deliveryDate, rowCounter} = column1(worksheet);
+    const {person, factory, phone} = column8(worksheet);
+
+    //Crucial Info - minimalProcessing
     const POnumber = (worksheet.getCell('K1')).value;
+    const totalQty = worksheet.getCell(rowCounter + 3, 4).value
+    const totalCost = worksheet.getCell(rowCounter + 6, 8).value
+    
+    //Translated factory and agent Names
+    let agentName;
+    const factoryValue = await translator(factory) || `PO#${POnumber} - NO INFO`
+    person ? agentName = await translator(person) : agentName = factoryValue
+
+
+    //creates item data into csv file
+    const directory = await writeToCsv(data, agentName, POnumber);   
+
+    //Fills out monitoring form
+    let totalItems = rowCounter - 1
+    await writeToMonitoring(formFields, poDate, deliveryDate, POnumber,totalQty, totalCost, monitoringForm, totalItems);
+    
+    //return statement
+    return {POnumber: POnumber, purchaseOrderDate: poDate,deliveryDate: deliveryDate, person: agentName, factory: factoryValue, phone: phone, filePath: directory}
+
+}
+
+
+async function readSheet(file)
+{
+    var workbook = new exceljs.Workbook();
+    await workbook.xlsx.load(file);
+    var worksheet = workbook.getWorksheet(1) || workbook.getWorksheet(2)
+    return worksheet;
+}
+
+function column1(worksheet)
+{
     let rowCounter = 1;
     const column = worksheet.getColumn(1);
     const column1= column.values;
@@ -48,11 +87,10 @@ const test =  async (PO, monitoringForm, formFields) =>{
                 break;
         }     
     }
+    return {data, poDate, deliveryDate, rowCounter}
+}
 
-
-    const totalQty = worksheet.getCell(rowCounter + 3, 4).value.result
-    const totalCost = worksheet.getCell(rowCounter + 6, 8).value.result
-
+function column8(worksheet){
     var infoColumn = worksheet.getColumn(8);
     let person;
     let factory;
@@ -78,11 +116,16 @@ const test =  async (PO, monitoringForm, formFields) =>{
         }
     })
 
+    return {person, factory, phone}
+}
+
+async function translator(entity)
+{
     const browser = await puppeteer.launch({headless: true});
     const page = await browser.newPage();
     await page.goto('https://www.google.com/search?q=google+translate&rlz=1C1VDKB_enUS1113US1113&oq=google+translate&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIKCAEQABixAxiABDINCAIQABiDARixAxiABDIPCAMQABgUGIcCGLEDGIAEMgcIBBAAGIAEMgYIBRBFGD0yBggGEEUYPDIGCAcQRRhB0gEIMjEyOGowajeoAgCwAgA&sourceid=chrome&ie=UTF-8')
 
-    await page.locator("#tw-source-text-ta").fill(person);
+    await page.locator("#tw-source-text-ta").fill(entity);
     //await page.waitForTimeout(2000)
     const value = await page.evaluate(async ()=>{
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -99,59 +142,42 @@ const test =  async (PO, monitoringForm, formFields) =>{
         }
         return translation;
     })
-    await page.goto('https://www.google.com/search?q=google+translate&rlz=1C1VDKB_enUS1113US1113&oq=google+translate&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIKCAEQABixAxiABDINCAIQABiDARixAxiABDIPCAMQABgUGIcCGLEDGIAEMgcIBBAAGIAEMgYIBRBFGD0yBggGEEUYPDIGCAcQRRhB0gEIMjEyOGowajeoAgCwAgA&sourceid=chrome&ie=UTF-8')
-    await page.locator("#tw-source-text-ta").fill(factory);
-
-    const factoryValue = await page.evaluate(async ()=>{
-        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-        //Initialize the translated text and loop until it changes
-        let translation = '';
-        for (let i = 0; i < 10; i++) { // Retry up to 10 times
-            const element = document.querySelector("#tw-target-text > span.Y2IQFc");
-            if (element && element.innerText !== 'Translation' && element.innerText !== 'Translating') { // Adjust 'Translation' if it's different
-                translation = element.innerText;
-                break;
-            }
-            await delay(500); // Wait 500ms before checking again
-        }
-        return translation;
-    })
 
     await browser.close();
+    return value;
+}
 
+async function writeToCsv(data,agentName,POnumber){
     var writeTo = new exceljs.Workbook();
     writeTo.addWorksheet('My sheet')
     const writeToSheet = writeTo.getWorksheet(1);
     writeToSheet.getRow(1).values = ['STYLE#','ITEM#','DESC1','DESC2','DESC3','DESC4','CAT','SUBCAT','VEND#','VENDOR PRODUCTION#','RMB.COST','ARB.COST2','FOB','QTY','UM','SELLPRC1','SELLPRC2','SELLPRC3','SELLPRC4','SELLPRC5','SELLPRC6','SEASON','WH','DUTY%','COMM%','MISC%','PC/CTN', 'GENDER']
     for (let items of data)
     {
-        writeToSheet.addRow([items.itemNumber, items.itemNumber,"","","","","","",value,items.itemNumber, 18, "", 2.4, items.qty, items.dzn, 5, 5, 5, 6.5])
+        writeToSheet.addRow([items.itemNumber, items.itemNumber,"","","","","","",agentName,items.itemNumber, 18, "", 2.4, items.qty, items.dzn, 5, 5, 5, 6.5])
     }
 
     const writeBuffer = await writeTo.csv.writeBuffer();
-    const directory = path.join(`${__dirname}/ediUpload`, `${POnumber} ${value}.csv`);
-    fs.writeFile(directory,writeBuffer,(error)=>{ error ? console.log(error): console.log('file saved')});
-    //write to a workbook file
-    await xlsxPopulate.fromFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`).then((workbook)=>
-    {
-        const worksheet = workbook.sheet("PO DATA");
-        const finalRow = worksheet.usedRange()._maxRowNumber
-        const dataRange = worksheet.range(7,1,finalRow,16).value();
-        worksheet.range(7+1,1,finalRow+1,16).value(dataRange)
-        worksheet.range("A7:P7").value([[formFields.rep, "", POnumber, formFields.description, formFields.category,  poDate, deliveryDate, formFields.container, rowCounter -1, totalQty, totalCost, (totalQty / 50 * formFields.multiplier)]])
-        //worksheet.cell("L7").formula(`(J7/50)*${formFields.multiplier}`);
-        return workbook.toFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`);    
-    })
-    .then(data => {console.log('done')})
-    console.log(poDate);
-    const finale = {POnumber: POnumber, purchaseOrderDate: poDate,deliveryDate: deliveryDate, person: value, factory: factoryValue, phone: phone, filePath: directory}
-    return finale;
+    const directory = path.join(`${__dirname}/ediUpload`, `${POnumber} ${agentName}.csv`);
+    fs.writeFile(directory, writeBuffer, (error) => { error ? console.log(error) : console.log('file saved'); });
 
+    return directory
 }
 
-
-
+async function writeToMonitoring(formFields, poDate, deliveryDate, POnumber,totalQty, totalCost, monitoringForm, totalItems )
+{
+    await xlsxPopulate.fromFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`).then((workbook)=>
+        {
+            const worksheet = workbook.sheet("PO DATA");
+            const finalRow = worksheet.usedRange()._maxRowNumber
+            const dataRange = worksheet.range(7,1,finalRow,16).value();
+            worksheet.range(7+1,1,finalRow+1,16).value(dataRange)
+            worksheet.range("A7:P7").value([[formFields.rep, "", POnumber, formFields.description, formFields.category,  poDate, deliveryDate, formFields.container, totalItems, totalQty, totalCost, (totalQty / 50 * formFields.multiplier)]])
+            //worksheet.cell("L7").formula(`(J7/50)*${formFields.multiplier}`);
+            return workbook.toFileAsync(`//HOST/network/Lindafashion/JESSA -LINDA FASHION FILES/Purchasing/PO MONITORING FORM/${monitoringForm.originalname}`);    
+        })
+        .then(data => {console.log('done')})
+}
 
 module.exports = 
 {

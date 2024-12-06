@@ -54,7 +54,7 @@ export default function PO(){
             {
                 const answer = await data.json();
                 varAgent = answer.agentCode
-                setAgent(varAgent);
+                setAgent(varAgent.split("T")[0]);
                 return;
                 
             })
