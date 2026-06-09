@@ -1,9 +1,9 @@
 const puppeteer = require('puppeteer');
 const {JSDOM} = require('jsdom')
-const ediExplore = async(person, factory, phone)=>
+
+const loginSession = async()=>
 {
-    
-    const edi = await fetch('https://edilindafashion.com/edibs/menu/login.php',
+    const sessionId = await fetch('https://edilindafashion.com/edibs/menu/login.php',
         {
             //Get request to attain the PHPSSID cookie
             headers: 
@@ -36,79 +36,75 @@ const ediExplore = async(person, factory, phone)=>
             const cookieString = data.headers.get('set-cookie');
             const sessionId = cookieString.split(';')[0];
             return sessionId;
-        })
-    .then(async (data)=>
+        });
+
+    await fetch('https://edilindafashion.com/edibs/menu/login.php',
         {
-            //Authenticate
-            const response = await fetch('https://edilindafashion.com/edibs/menu/login.php',
-                {
-                    headers:
-                    {
-                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-                        'Accept-Encoding': 'gzip, deflate, br, zstd',
-                        'Accept-Language': 'en-US,en;q=0.9',
-                        'Cache-Control': 'max-age=0',
-                        'Connection': 'keep-alive',
-                        'Content-Length': '50',
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Cookie': `usercookie=ABRAR; compcookie=00LINDA; ${data}`,
-                        'Host': 'edilindafashion.com',
-                        'Origin': 'https://edilindafashion.com',
-                        'Referer': 'https://edilindafashion.com/edibs/menu/login.php',
-                        'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-                        'Sec-CH-UA-Mobile': '?0',
-                        'Sec-CH-UA-Platform': '"Windows"',
-                        'Sec-Fetch-Dest': 'document',
-                        'Sec-Fetch-Mode': 'navigate',
-                        'Sec-Fetch-Site': 'same-origin',
-                        'Sec-Fetch-User': '?1',
-                        'Upgrade-Insecure-Requests': '1',
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
-                    },
-                    method: 'POST',
-                    body: 'comp_code=00LINDA&username=ABRAR&password=06032024'
-                    
-                }
-            )
-
-            return data;
-        })
-    .then(async (data)=>
+            headers:
             {
-                //Go To factory agent header
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'Accept-Encoding': 'gzip, deflate, br, zstd',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cache-Control': 'max-age=0',
+                'Connection': 'keep-alive',
+                'Content-Length': '50',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cookie': `usercookie=ABRAR; compcookie=00LINDA; ${sessionId}`,
+                'Host': 'edilindafashion.com',
+                'Origin': 'https://edilindafashion.com',
+                'Referer': 'https://edilindafashion.com/edibs/menu/login.php',
+                'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+                'Sec-CH-UA-Mobile': '?0',
+                'Sec-CH-UA-Platform': '"Windows"',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'same-origin',
+                'Sec-Fetch-User': '?1',
+                'Upgrade-Insecure-Requests': '1',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+            },
+            method: 'POST',
+            body: 'comp_code=00LINDA&username=ABRAR&password=06032024'
+        }
+    );
 
-                const page = await fetch("https://edilindafashion.com/edibs/admin/d1menu.php?sel_menu_id=223",
-                    {
-                        method: 'POST',
-                        headers: 
-                        {
-                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-                            'Accept-Encoding': 'gzip, deflate, br, zstd',
-                            'Accept-Language': 'en-US,en;q=0.9',
-                            'Cache-Control': 'max-age=0',
-                            'Connection': 'keep-alive',
-                            'Content-Length': '333',
-                            'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryABLG4MgjPInU2tdm',
-                            'Cookie': `${data}`,
-                            'Host': 'edilindafashion.com',
-                            'Origin': 'https://edilindafashion.com',
-                            'Referer': 'https://edilindafashion.com/edibs/sy/edibs_weekly_list.php',
-                            'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-                            'Sec-CH-UA-Mobile': '?0',
-                            'Sec-CH-UA-Platform': '"Windows"',
-                            'Sec-Fetch-Dest': 'frame',
-                            'Sec-Fetch-Mode': 'navigate',
-                            'Sec-Fetch-Site': 'same-origin',
-                            'Sec-Fetch-User': '?1',
-                            'Upgrade-Insecure-Requests': '1',
-                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
-                        },
-                        body: `------WebKitFormBoundaryABLG4MgjPInU2tdm\r\nContent-Disposition: form-data; name="page"\r\n\r\n1\r\n------WebKitFormBoundaryABLG4MgjPInU2tdm\r\nContent-Disposition: form-data; name="filtertext"\r\n\r\n\r\n------WebKitFormBoundaryABLG4MgjPInU2tdm\r\nContent-Disposition: form-data; name="condition"\r\n\r\ncode\r\n------WebKitFormBoundaryABLG4MgjPInU2tdm--\r\n`
-                    }
-                );
+    await fetch("https://edilindafashion.com/edibs/admin/d1menu.php?sel_menu_id=223",
+        {
+            method: 'POST',
+            headers: 
+            {
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'Accept-Encoding': 'gzip, deflate, br, zstd',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cache-Control': 'max-age=0',
+                'Connection': 'keep-alive',
+                'Content-Length': '333',
+                'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryABLG4MgjPInU2tdm',
+                'Cookie': `${sessionId}`,
+                'Host': 'edilindafashion.com',
+                'Origin': 'https://edilindafashion.com',
+                'Referer': 'https://edilindafashion.com/edibs/sy/edibs_weekly_list.php',
+                'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+                'Sec-CH-UA-Mobile': '?0',
+                'Sec-CH-UA-Platform': '"Windows"',
+                'Sec-Fetch-Dest': 'frame',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'same-origin',
+                'Sec-Fetch-User': '?1',
+                'Upgrade-Insecure-Requests': '1',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+            },
+            body: `------WebKitFormBoundaryABLG4MgjPInU2tdm\r\nContent-Disposition: form-data; name="page"\r\n\r\n1\r\n------WebKitFormBoundaryABLG4MgjPInU2tdm\r\nContent-Disposition: form-data; name="filtertext"\r\n\r\n\r\n------WebKitFormBoundaryABLG4MgjPInU2tdm\r\nContent-Disposition: form-data; name="condition"\r\n\r\ncode\r\n------WebKitFormBoundaryABLG4MgjPInU2tdm--\r\n`
+        }
+    );
 
-                return data;
-        })
+    return sessionId;
+}
+
+const ediExplore = async(person, factory, phone, cookie)=>
+{
+    const ediCookie = cookie || await loginSession();
+    const edi = await Promise.resolve(ediCookie)
     .then(async (data)=>
         {
             const response = await fetch('https://edilindafashion.com/edibs/po/po_factory_hdr_aj.php', 
@@ -347,5 +343,6 @@ const ediExplore = async(person, factory, phone)=>
 
 module.exports = 
 {
-    run: ediExplore
+    run: ediExplore,
+    login: loginSession
 }
