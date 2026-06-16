@@ -4,3 +4,4 @@ ediUpload/
 *.csv
 *.xlsx
 *.xls
+xlsxReader.js

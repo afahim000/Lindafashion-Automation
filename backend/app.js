@@ -1,5 +1,5 @@
 const express = require('express')
-const reader = require('./xlsxReader.js');
+//const reader = require('./xlsxReader.js');
 const app = express();
 const cors = require('cors');
 const multer = require('multer')
@@ -11,30 +11,13 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 const upload = multer()
 app.use(cors());
-const PORT = 2000;
+const config = require('./config');
+const PORT = config.PORT;
 const ediUploadDirectory = path.join(__dirname, 'ediUpload');
 const uploadProgress = {};
-const excludedPoNumbers = new Set(['S00178']);
+const excludedPoNumbers = new Set(['DEMO_PO_EXCLUDED']);
 const poVendorOverrides = {
-    '26007': 'Zhang',
-    '26013': 'Zhang',
-    '26017': 'Zhang',
-    '26018': 'Zhang',
-    '26026': 'Zhang',
-    '26075': 'Zhang',
-    'A0038': 'Zhang',
-    'A0049': 'Zhang',
-    'S00177': 'Zhang',
-    '26027': 'Wang Xinjua',
-    '26076': 'Wang Xinjua',
-    '26077': 'Wang Xinjua',
-    '26046': 'Chen Shaojua',
-    '26050': 'Zhang Ziaofe',
-    'A0024': 'Huang Taoyin',
-    'A0044': 'Huang Taoyin',
-    'A0046': 'Huang Taoyin',
-    'A0053': 'Huang Taoyin',
-    'A00168': 'Huang Taoyin',
+    
 };
 let ediSessionCookie = null;
 let ediSessionStartedAt = null;
@@ -104,7 +87,7 @@ async function getVendorWithSharedSession(vendor)
 }
 
 
-
+/*
 app.post('/',upload.array('upload', 2),async (req, res) =>
 {
     try
@@ -133,7 +116,7 @@ app.post('/',upload.array('upload', 2),async (req, res) =>
 }
    
 )
-
+*/
 app.post('/edi',async (req, res)=>
 {
     console.log(req.body)

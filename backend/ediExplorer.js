@@ -1,9 +1,9 @@
 const puppeteer = require('puppeteer');
 const {JSDOM} = require('jsdom')
-
+const config = require('./config');
 const loginSession = async()=>
 {
-    const sessionId = await fetch('https://edilindafashion.com/edibs/menu/login.php',
+    const sessionId = await fetch(`${config.EDI_BASE_URL}/edibs/menu/login.php`,
         {
             //Get request to attain the PHPSSID cookie
             headers: 
@@ -13,8 +13,8 @@ const loginSession = async()=>
                 'Accept-Language': 'en-US,en;q=0.9',
                 'Cache-Control': 'max-age=0',
                 'Connection': 'keep-alive',
-                'Cookie': 'usercookie=ABRAR; compcookie=00LINDA',
-                'Host': 'edilindafashion.com',
+                'Cookie': `usercookie=${config.EDI_USER_COOKIE}; compcookie=${config.EDI_COMP_COOKIE}`,
+                'Host': config.EDI_HOST,
                 'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
                 'Sec-CH-UA-Mobile': '?0',
                 'Sec-CH-UA-Platform': '"Windows"',
@@ -38,7 +38,7 @@ const loginSession = async()=>
             return sessionId;
         });
 
-    await fetch('https://edilindafashion.com/edibs/menu/login.php',
+    await fetch(`${config.EDI_BASE_URL}/edibs/menu/login.php`,
         {
             headers:
             {
@@ -49,10 +49,10 @@ const loginSession = async()=>
                 'Connection': 'keep-alive',
                 'Content-Length': '50',
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Cookie': `usercookie=ABRAR; compcookie=00LINDA; ${sessionId}`,
-                'Host': 'edilindafashion.com',
-                'Origin': 'https://edilindafashion.com',
-                'Referer': 'https://edilindafashion.com/edibs/menu/login.php',
+                'Cookie': `usercookie=${config.EDI_USER_COOKIE}; compcookie=${config.EDI_COMP_COOKIE}; ${sessionId}`,
+                'Host': config.EDI_HOST,
+                'Origin': `${config.EDI_BASE_URL}`,
+                'Referer': `${config.EDI_BASE_URL}/edibs/menu/login.php`,
                 'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
                 'Sec-CH-UA-Mobile': '?0',
                 'Sec-CH-UA-Platform': '"Windows"',
@@ -64,11 +64,15 @@ const loginSession = async()=>
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
             },
             method: 'POST',
-            body: 'comp_code=00LINDA&username=ABRAR&password=06032024'
+            body: new URLSearchParams({
+            comp_code: config.EDI_COMP_CODE,
+            username: config.EDI_USERNAME,
+            password: config.EDI_PASSWORD,
+            }).toString()
         }
     );
 
-    await fetch("https://edilindafashion.com/edibs/admin/d1menu.php?sel_menu_id=223",
+    await fetch(`${config.EDI_BASE_URL}/edibs/admin/d1menu.php?sel_menu_id=223`,
         {
             method: 'POST',
             headers: 
@@ -81,9 +85,9 @@ const loginSession = async()=>
                 'Content-Length': '333',
                 'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryABLG4MgjPInU2tdm',
                 'Cookie': `${sessionId}`,
-                'Host': 'edilindafashion.com',
-                'Origin': 'https://edilindafashion.com',
-                'Referer': 'https://edilindafashion.com/edibs/sy/edibs_weekly_list.php',
+                'Host': config.EDI_HOST,
+                'Origin': `${config.EDI_BASE_URL}`,
+                'Referer': `${config.EDI_BASE_URL}/edibs/sy/edibs_weekly_list.php`,
                 'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
                 'Sec-CH-UA-Mobile': '?0',
                 'Sec-CH-UA-Platform': '"Windows"',
@@ -107,7 +111,7 @@ const ediExplore = async(person, factory, phone, cookie)=>
     const edi = await Promise.resolve(ediCookie)
     .then(async (data)=>
         {
-            const response = await fetch('https://edilindafashion.com/edibs/po/po_factory_hdr_aj.php', 
+            const response = await fetch(`${config.EDI_BASE_URL}/edibs/po/po_factory_hdr_aj.php`, 
                 {
                     headers:
                     {
@@ -118,9 +122,9 @@ const ediExplore = async(person, factory, phone, cookie)=>
                         "content-length": "101",
                         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
                         "cookie": `${data}`,
-                        "host": "edilindafashion.com",
-                        "origin": "https://edilindafashion.com",
-                        "referer": "https://edilindafashion.com/edibs/po/po_factory_hdr.php",
+                        "host": config.EDI_HOST,
+                        "origin": `${config.EDI_BASE_URL}`,
+                        "referer": `${config.EDI_BASE_URL}/edibs/po/po_factory_hdr.php`,
                         "sec-ch-ua": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
                         "sec-ch-ua-mobile": "?0",
                         "sec-ch-ua-platform": '"Windows"',
@@ -198,7 +202,7 @@ const ediExplore = async(person, factory, phone, cookie)=>
                         sav_sort_col: 'factory_hdr',
                         new_factory_hdr_id: '',
                         old_factory_hdr_log_user: '',
-                        new_factory_hdr_log_user: 'ABRAR',
+                        new_factory_hdr_log_user: config.EDI_USERNAME,
                         new_factory_hdr_agency_no: person,
                         old_factory_hdr_agency_no: '',
                         new_factory_hdr_agency_name: person,
@@ -296,7 +300,7 @@ const ediExplore = async(person, factory, phone, cookie)=>
                         delete_row: '',
                         helpbox: ''
                       }).toString();
-                    const response = await fetch('https://edilindafashion.com/edibs/po/index_po_master_tables.php',
+                    const response = await fetch(`${config.EDI_BASE_URL}/edibs/po/index_po_master_tables.php`,
                         {
                             headers:
                             {
@@ -306,9 +310,9 @@ const ediExplore = async(person, factory, phone, cookie)=>
                                 'Connection': 'keep-alive',
                                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                                 'Cookie': `${data.cookie}`,
-                                'Host': 'edilindafashion.com',
-                                'Origin': 'https://edilindafashion.com',
-                                'Referer': 'https://edilindafashion.com/edibs/po/po_factory_hdr.php',
+                                'Host': config.EDI_HOST,
+                                'Origin': `${config.EDI_BASE_URL}`,
+                                'Referer': `${config.EDI_BASE_URL}/edibs/po/po_factory_hdr.php`,
                                 'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
                                 'Sec-CH-UA-Mobile': '?0',
                                 'Sec-CH-UA-Platform': '"Windows"',

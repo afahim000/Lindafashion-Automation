@@ -2,9 +2,10 @@ const puppeteer = require('puppeteer')
 const fs = require('fs')
 const path = require('path')
 const {JSDOM} = require('jsdom')
-
+const config = require('./config');
 function ediDate(date)
 {
+   
     const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
 
     if(!match)
@@ -97,21 +98,28 @@ function createPoFormData({file, filePath, POnumber, poDate, deliveryDate, agent
     const csvFile = new Blob([file], { type: 'text/csv' });
     const formData = new FormData();
 
-    formData.append("nvend_no", agentCode);
+     function limitVendorName(vendor)
+    {
+    return String(vendor || '')
+        .trim()
+        .replace(/\s+/g, ' ')
+        .slice(0, 12);
+    }
+    formData.append("nvend_no", limitVendorName(agentCode));
     formData.append("ovend_no", "");
     formData.append("savcode", "");
     formData.append("page", "1");
     formData.append("direction", "");
     formData.append("cursor", "");
     formData.append("new_vend_no", "");
-    formData.append("new_factory_hdr_name", vendor);
+    formData.append("new_factory_hdr_name", limitVendorName(vendor));;
     formData.append("update_all", "");
     formData.append("all_sku_no", "a");
     formData.append("cmd", cmd);
     formData.append("subcmd", "");
     formData.append("po_exist_flg", "N");
     formData.append("po_fnd_flg", "N");
-    formData.append("code", agentCode);
+    formData.append("code", limitVendorName(agentCode));
     formData.append("sel_po_no", POnumber);
     formData.append("sel_po_dat", ediDate(poDate));
     formData.append("sel_eta_dat", ediDate(deliveryDate));
@@ -142,7 +150,7 @@ function createPoFormData({file, filePath, POnumber, poDate, deliveryDate, agent
 
 function postEdiForm(cookie, formData)
 {
-    return fetch('https://edilindafashion.com/edibs/po/po_propose_from_csv_entry.php',
+    return fetch(`https://${config.EDI_HOST}/edibs/po/po_propose_from_csv_entry.php`,
         {
             method: 'POST',
             headers:
@@ -153,9 +161,9 @@ function postEdiForm(cookie, formData)
                 "cache-control":"max-age=0",
                 "connection":"keep-alive",
                 cookie: cookie,
-                host: "edilindafashion.com",
-                origin: "https://edilindafashion.com",
-                referer: "https://edilindafashion.com/edibs/po/po_propose_from_csv_entry.php",
+                host: config.EDI_HOST,
+                origin: config.EDI_BASE_URL,
+                referer: `${config.EDI_BASE_URL}/edibs/po/po_propose_from_csv_entry.php`,
                 "sec-ch-ua": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
                 "sec-ch-ua-mobile": "?0",
                 "sec-ch-ua-platform":"Windows",
