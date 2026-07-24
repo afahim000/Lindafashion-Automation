@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Linda Fashion Automation
 
 Internal Linda Fashion PO/EDI workflow automation.
@@ -138,3 +139,27 @@ npm run build
 - If a CSV does not appear in the upload queue, confirm it was saved into `backend/ediUpload` or the folder set by `EDI_UPLOAD_FOLDER`.
 - If dates show `UNKNOWN-DATE`, add a PO override in `backend/config/ediConversionConfig.js`.
 - If the wrong vendor is used, add an agent mapping or PO-specific vendor override in `backend/config/ediConversionConfig.js`.
+=======
+# PO to EDI Automation Workflow
+
+A Node.js/React workflow for converting purchase order data into EDI-ready CSV files and automating parts of the upload process into an EDI system.
+
+## Features
+- Parses purchase order data and prepares CSV files for EDI upload
+- Lists pending CSV files and tracks upload progress
+- Uses environment variables for private EDI credentials
+- Handles vendor lookup and upload status checks
+- Separates private company-specific spreadsheet logic from the public repo
+
+## Tech Stack
+- Node.js
+- Express
+- React
+- Puppeteer
+- JavaScript
+- dotenv
+
+## Security
+Credentials are stored in a local `.env` file and excluded from GitHub.
+A `.env.example` file is provided for setup.
+>>>>>>> 63afdce6c02aca4c71bc57f1b4567a445a7ec035
