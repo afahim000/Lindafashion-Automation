@@ -1,0 +1,49 @@
+{
+  "source_pdf": "C:\\Users\\ABRAR\\AppData\\Local\\Temp\\Purchase_Order_P860014335A.pdf",
+  "extracted_at": "2026-07-17T11:30:43",
+  "po_number": "P860014335A",
+  "sales_order_number": "S860014335",
+  "customer_number": "C086001416",
+  "customer_po_number": "2595186",
+  "customer_reference": "Fans - Sulphur Springs",
+  "bill_to": {
+    "name": "Proforma A-Z Specialties",
+    "address": [
+      "214 S. Main Street Suite 102A",
+      "Duncanville, TX 75116"
+    ]
+  },
+  "ship_to": {
+    "name": "TMF Sulphur Springs",
+    "address": [
+      "PO#2595186",
+      "115 Airport Road",
+      "SULPHUR SPRINGS, TX 75482"
+    ]
+  },
+  "quickbooks_customer_full_name": "PROFORMA A-Z SPECIALTIES",
+  "quickbooks_class_full_name": "",
+  "quickbooks_terms_full_name": "NET 30",
+  "quickbooks_rep_full_name": "JESSA",
+  "quickbooks_fob": "NJ",
+  "quickbooks_sales_order_txn_id": "",
+  "quickbooks_invoice_ref_number": "",
+  "transaction_date": "07/16/2026",
+  "ship_method": "FedEx Ground",
+  "shipping_account_number": "220950522",
+  "shipping_account": "Owner Paid",
+  "total_amount": 421.92,
+  "pdf_file_name_prefix": "PROFORMA A-Z PO P 860014335A",
+  "lines": [
+    {
+      "line_number": 1,
+      "item_name": "TE59",
+      "quickbooks_item_full_name": "Electronics:TE259-BLACK",
+      "description": "2 SPEED PORTABLE FANS (BLACK)",
+      "quantity": 48.0,
+      "rate": 8.79,
+      "amount": 421.92
+    }
+  ],
+  "raw_text": "07/16/2026 \u00fe Flexible o Firm\nPurchase Order\nIn Hands By Date\nStandard Production Time\nPO #: P860014335A\nSales Person: Sherry Kennedy\nBill To Ship To Information\nProforma A-Z Specialties TMF Sulphur Springs\n214 S. Main Street Suite 102A PO#2595186\nDuncanville, TX 75116 115 Airport Road\nSULPHUR SPRINGS, TX 75482\nManufacturer Information\nContact for this Order\nMichelle Wells Vendor ID#: V21783\nPhone: 972-709-0015 Tanslin Premium\nMichelle.Wells@proforma.com Jessa Mangali Phone: 732-943-2886\n2195 Elizabeth Ave 1st Floor Fax:\nSouth Bld info@tanslin.com\nRAHWAY, NJ 07065 info@tanslin.com;\nSend PO: abrar@tanslin.com;\njessa@tanslin.com\nSales Order Customer Customer PO # Customer Reference Request Ship Date\nS860014335 C086001416 2595186 Fans - Sulphur Springs\nReq Ship In Hands Unit\nLine # Item # Item Description Qty Unit Cost Amount\nDate By Date Type\n1 TE59 2 SPEED PORTABLE FANS (BLACK) 48 $8.7900 Each $421.92\nShipping Information\nSpecial Shipping Notes: Please enter the following (exactly as they are) in the shipping reference field(s):\n\u00b7 P860014335A in PO Reference Field\n\u00b7 Fans - Sulphur Springs in Customer Reference Field\nShipping Method: FedEx Ground\nShipping Account #: 220950522\nShipping Account: Owner Paid\nTotal P.O. Amount: $421.92 USD\n- Vendor represents that all products and services ordered comply with all laws, rules and regulations.\nProprietary and Confidential 1 of 1"
+}

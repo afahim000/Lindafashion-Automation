@@ -1,0 +1,19 @@
+{
+  "orderNo": "15914",
+  "totalCartons": 2,
+  "soldTo": [
+    "BELLAS INTERNACIONAL LLC.",
+    "1221 BRICKELL AVENUE",
+    "MIAMI, FL 33131"
+  ],
+  "shipTo": [
+    "AMAD LOGISTICS",
+    "IMPORTACIONES MUNDO OFERTAS-SI CARG",
+    "8274 N.W. 14TH STREET",
+    "DORAL, FL 33126"
+  ],
+  "cartons": [
+    {"box": 1, "actualWeight": 47, "length": 22, "width": 19, "height": 17},
+    {"box": 2, "actualWeight": 41, "length": 21, "width": 16, "height": 17}
+  ]
+}

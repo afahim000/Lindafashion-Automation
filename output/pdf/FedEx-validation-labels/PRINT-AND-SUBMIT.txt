@@ -1,0 +1,29 @@
+FEDEX API VALIDATION LABEL PACKAGE
+Created: July 17, 2026
+
+PRINTING
+1. Open FedEx-validation-labels-combined.pdf.
+2. Print all 6 pages on US Letter paper (8.5 x 11 inches).
+3. In the print dialog select Actual size or 100% scale.
+4. Do not select Fit, Shrink, or Scale to page.
+5. Use a laser printer when possible and confirm every barcode is sharp and unbroken.
+
+SCANNING
+1. Scan the printed pages at 300 dpi or higher.
+2. Keep pages upright, uncropped, and free of shadows or folds.
+3. Save as PDF without aggressive image compression.
+4. Check that the smallest barcode lines remain distinct before submitting.
+
+SUBMISSION
+- FedEx-validation-package-original.zip is the untouched original package. It includes
+  the six labels, four transaction HTML records, and validation manifest.
+- If FedEx specifically asks for scanned print samples, send the scanned PDF instead.
+- Use the FedEx certification/support channel or recipient assigned to your account.
+  Do not ship parcels using these validation labels unless FedEx confirms they are valid
+  production shipments.
+
+TRACKING NUMBERS
+- Ground: 794842056986
+- Priority Overnight: 794842057136
+- FedEx 2Day: 794842057206
+- Ground multi-box: 794842057240, 794842057250, 794842057261

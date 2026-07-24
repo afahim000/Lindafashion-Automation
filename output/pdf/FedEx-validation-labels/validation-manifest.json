@@ -1,0 +1,66 @@
+[
+  {
+    "scenario": "ground",
+    "serviceType": "FEDEX_GROUND",
+    "trackingNumber": "794842056986",
+    "labels": [
+      {
+        "fileName": "VALIDATION-1-GROUND-1784319237553-fedex-label.pdf",
+        "trackingNumber": "794842056986"
+      }
+    ],
+    "transactionId": "2a0d5955-227e-4ec2-861b-7c206dd5ebc3",
+    "transactionFileName": "VALIDATION-1-GROUND-1784319237553-fedex-transaction.html",
+    "billingType": "SENDER"
+  },
+  {
+    "scenario": "priority-overnight",
+    "serviceType": "PRIORITY_OVERNIGHT",
+    "trackingNumber": "794842057136",
+    "labels": [
+      {
+        "fileName": "VALIDATION-2-PRIORITY-OVERNIGHT-1784319239525-fedex-label.pdf",
+        "trackingNumber": "794842057136"
+      }
+    ],
+    "transactionId": "9defba82-f088-4578-9ddf-1efdc23b2469",
+    "transactionFileName": "VALIDATION-2-PRIORITY-OVERNIGHT-1784319239525-fedex-transaction.html",
+    "billingType": "SENDER"
+  },
+  {
+    "scenario": "fedex-2day",
+    "serviceType": "FEDEX_2_DAY",
+    "trackingNumber": "794842057206",
+    "labels": [
+      {
+        "fileName": "VALIDATION-3-FEDEX-2DAY-1784319241432-fedex-label.pdf",
+        "trackingNumber": "794842057206"
+      }
+    ],
+    "transactionId": "42d3aa49-2329-4c82-910f-ce448c3f5935",
+    "transactionFileName": "VALIDATION-3-FEDEX-2DAY-1784319241432-fedex-transaction.html",
+    "billingType": "SENDER"
+  },
+  {
+    "scenario": "ground-multi-box",
+    "serviceType": "FEDEX_GROUND",
+    "trackingNumber": "794842057240",
+    "labels": [
+      {
+        "fileName": "VALIDATION-4-GROUND-MULTI-BOX-1784319243818-fedex-label-1-1.pdf",
+        "trackingNumber": "794842057240"
+      },
+      {
+        "fileName": "VALIDATION-4-GROUND-MULTI-BOX-1784319243818-fedex-label-2-1.pdf",
+        "trackingNumber": "794842057250"
+      },
+      {
+        "fileName": "VALIDATION-4-GROUND-MULTI-BOX-1784319243818-fedex-label-3-1.pdf",
+        "trackingNumber": "794842057261"
+      }
+    ],
+    "transactionId": "86a105e5-b6e8-4855-862b-cc8de7da32c7",
+    "transactionFileName": "VALIDATION-4-GROUND-MULTI-BOX-1784319243818-fedex-transaction.html",
+    "billingType": "SENDER"
+  }
+]

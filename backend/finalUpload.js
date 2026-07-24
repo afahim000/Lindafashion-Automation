@@ -34,7 +34,8 @@ const finalUpload = async (cookie, filePath, POnumber, poDate, deliveryDate, age
     }));
 
     const html = await response.text();
-    const redFlags = findRedFlags(html, POnumber);
+    const redFlagDetails = findRedFlagDetails(html, POnumber);
+    const redFlags = redFlagDetails.map((flag)=> flag.label);
 
     if(redFlags.length > 0)
     {
@@ -43,6 +44,7 @@ const finalUpload = async (cookie, filePath, POnumber, poDate, deliveryDate, age
             status: response.status,
             html,
             redFlags,
+            redFlagDetails,
             flagged: true,
             converted: false
         }
@@ -77,7 +79,8 @@ const finalUpload = async (cookie, filePath, POnumber, poDate, deliveryDate, age
         dnums: convertState.dnums,
     }));
     const convertHtml = await convertResponse.text();
-    const convertRedFlags = findRedFlags(convertHtml, POnumber);
+    const convertRedFlagDetails = findRedFlagDetails(convertHtml, POnumber);
+    const convertRedFlags = convertRedFlagDetails.map((flag)=> flag.label);
 
     return {
         ok: response.ok && convertResponse.ok,
@@ -86,6 +89,7 @@ const finalUpload = async (cookie, filePath, POnumber, poDate, deliveryDate, age
         uploadStatus: response.status,
         convertStatus: convertResponse.status,
         redFlags: convertRedFlags,
+        redFlagDetails: convertRedFlagDetails,
         flagged: convertRedFlags.length > 0,
         converted: convertResponse.ok,
         convertedLines: convertState.dnums.length
@@ -179,25 +183,22 @@ function postEdiForm(cookie, formData)
     )
 }
 
-function findRedFlags(html, POnumber)
+function findRedFlagDetails(html, POnumber)
 {
     const dom = new JSDOM(html);
     const rows = [...dom.window.document.querySelectorAll('tr')];
-    const flagReasons = {
-        po: 'PO Already Exists',
-        vendor: 'FACTORY NOT SETUP',
-        item: 'EITHER ITEM NOT SETUP OR NOT IN PO'
-    };
 
     const flags = rows
         .filter((row)=> isPoLineRow(row, POnumber))
         .flatMap((row)=>
         {
             const cells = [...row.querySelectorAll('td')];
+            const lineNumber = cells[0]?.textContent.trim();
+            const linePrefix = lineNumber ? `Line ${lineNumber} ` : '';
             const checks = [
-                {type: 'PO#', reason: flagReasons.po, cell: cells[1]},
-                {type: 'VENDOR', reason: flagReasons.vendor, cell: cells[3]},
-                {type: 'ITEM', reason: flagReasons.item, cell: cells[4]},
+                {type: 'PO#', cell: cells[1]},
+                {type: 'VENDOR', cell: cells[3]},
+                {type: 'ITEM#', cell: cells[4]},
             ];
 
             return checks
@@ -205,11 +206,28 @@ function findRedFlags(html, POnumber)
                 .map((check)=>
                 {
                     const value = check.cell.textContent.trim();
-                    return `${check.type}${value ? ` ${value}` : ''}: ${check.reason}`;
+                    return {
+                        label: `${linePrefix}${check.type}${value ? ` ${value}` : ''}`,
+                        column: check.type,
+                        value,
+                        cellHtml: check.cell.outerHTML,
+                        rowHtml: row.outerHTML,
+                    };
                 });
         });
 
-    return [...new Set(flags)];
+    const seen = new Set();
+    return flags.filter((flag)=> {
+        const key = `${flag.label}|${flag.cellHtml}`;
+
+        if(seen.has(key))
+        {
+            return false;
+        }
+
+        seen.add(key);
+        return true;
+    });
 }
 
 function getConvertState(html, POnumber)

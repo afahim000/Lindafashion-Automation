@@ -1,0 +1,655 @@
+
+> start
+> nodemon --ignore invoiceWork --ignore ediUpload app.js
+
+[33m[nodemon] 3.1.7[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ override existing { override: true }
+listening on port 2000
+Error: Checking network host '192.168.1.8' and share 'Tanslin  Able  Hansfull'...
+Company file is reachable: \\192.168.1.8\Tanslin  Able  Hansfull\QuickBook\Tanslin 2025\Tanslin 2025.QBW
+Creating Sales Order for PO P860014246A as QuickBooks customer 'PROFORMA A-Z SPECIALTIES'
+WARNING: Could not create COM object QBXMLRP.RequestProcessor. Error: Retrieving the COM class factory for component 
+with CLSID {2D0E74B6-021A-11D5-9054-00508BF70A94} failed due to the following error: 80040154 Class not registered 
+(Exception from HRESULT: 0x80040154 (REGDB_E_CLASSNOTREG)).
+WARNING: QBXMLRP2.RequestProcessor failed. Trying next QuickBooks SDK request processor if available. Error: QuickBooks
+ SDK connection opened, but BeginSession failed.
+
+Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the QuickBooks
+ user. If QuickBooks shows an app-certificate prompt, approve this app.
+
+By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often cannot 
+be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is working.
+
+Original error: Could not start QuickBooks.
+
+All available QuickBooks SDK request processors failed before the transaction could be sent.
+Last error: QuickBooks SDK connection opened, but BeginSession failed.
+Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the 
+QuickBooks user. If QuickBooks shows an app-certificate prompt, approve this app.
+By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often cannot 
+be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is working.
+Original error: Could not start QuickBooks.
+If the last error says "Could not start QuickBooks", open QuickBooks Desktop manually, open the Tanslin company file, 
+log in, then try again.
+At C:\Users\ABRAR\OneDrive\Documents\Quickbooks optimizer\scripts\import_po_to_quickbooks.ps1:543 char:5
++     throw @"
++     ~~~~~~~~
+    + CategoryInfo          : OperationStopped: (All available Q...then try again.:String) [], RuntimeException
+    + FullyQualifiedErrorId : All available QuickBooks SDK request processors failed before the transaction could be s 
+   ent.
+Last error: QuickBooks SDK connection opened, but BeginSession failed.
+    Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the Quick 
+   Books user. If QuickBooks shows an app-certificate prompt, approve this app.
+    By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often ca 
+   nnot be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is wor  
+  king.
+Original error: Could not start QuickBooks.
+    If the last error says "Could not start QuickBooks", open QuickBooks Desktop manually, open the Tanslin company fi 
+   le, log in, then try again.
+    at ChildProcess.<anonymous> (C:\Users\ABRAR\OneDrive\Desktop\Lindafashion-Automation\backend\app.js:952:31)
+    at ChildProcess.emit (node:events:519:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:304:5) {
+  code: 1,
+  output: "Checking network host '192.168.1.8' and share 'Tanslin  Able  Hansfull'...\n" +
+    'Company file is reachable: \\\\192.168.1.8\\Tanslin  Able  Hansfull\\QuickBook\\Tanslin 2025\\Tanslin 2025.QBW\n' +
+    "Creating Sales Order for PO P860014246A as QuickBooks customer 'PROFORMA A-Z SPECIALTIES'\n" +
+    'WARNING: Could not create COM object QBXMLRP.RequestProcessor. Error: Retrieving the COM class factory for component \r\n' +
+    'with CLSID {2D0E74B6-021A-11D5-9054-00508BF70A94} failed due to the following error: 80040154 Class not registered \r\n' +
+    '(Exception from HRESULT: 0x80040154 (REGDB_E_CLASSNOTREG)).\n' +
+    'WARNING: QBXMLRP2.RequestProcessor failed. Trying next QuickBooks SDK request processor if available. Error: QuickBooks\r\n' +
+    ' SDK connection opened, but BeginSession failed.\r\n' +
+    '\r\n' +
+    'Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the QuickBooks\r\n' +
+    ' user. If QuickBooks shows an app-certificate prompt, approve this app.\r\n' +
+    '\r\n' +
+    'By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often cannot \r\n' +
+    'be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is working.\r\n' +
+    '\r\n' +
+    'Original error: Could not start QuickBooks.\n' +
+    '\n' +
+    'All available QuickBooks SDK request processors failed before the transaction could be sent.\r\n' +
+    'Last error: QuickBooks SDK connection opened, but BeginSession failed.\r\n' +
+    'Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the \r\n' +
+    'QuickBooks user. If QuickBooks shows an app-certificate prompt, approve this app.\r\n' +
+    'By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often cannot \r\n' +
+    'be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is working.\r\n' +
+    'Original error: Could not start QuickBooks.\r\n' +
+    'If the last error says "Could not start QuickBooks", open QuickBooks Desktop manually, open the Tanslin company file, \r\n' +
+    'log in, then try again.\r\n' +
+    'At C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks optimizer\\scripts\\import_po_to_quickbooks.ps1:543 char:5\r\n' +
+    '+     throw @"\r\n' +
+    '+     ~~~~~~~~\r\n' +
+    '    + CategoryInfo          : OperationStopped: (All available Q...then try again.:String) [], RuntimeException\r\n' +
+    '    + FullyQualifiedErrorId : All available QuickBooks SDK request processors failed before the transaction could be s \r\n' +
+    '   ent.\r\n' +
+    'Last error: QuickBooks SDK connection opened, but BeginSession failed.\r\n' +
+    '    Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the Quick \r\n' +
+    '   Books user. If QuickBooks shows an app-certificate prompt, approve this app.\r\n' +
+    '    By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often ca \r\n' +
+    '   nnot be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is wor  \r\n' +
+    '  king.\r\n' +
+    'Original error: Could not start QuickBooks.\r\n' +
+    '    If the last error says "Could not start QuickBooks", open QuickBooks Desktop manually, open the Tanslin company fi \r\n' +
+    '   le, log in, then try again.'
+}
+Error: Checking network host '192.168.1.8' and share 'Tanslin  Able  Hansfull'...
+Company file is reachable: \\192.168.1.8\Tanslin  Able  Hansfull\QuickBook\Tanslin 2025\Tanslin 2025.QBW
+QuickBooks Desktop appears to be running.
+Creating Sales Order for PO P860014246A as QuickBooks customer 'PROFORMA A-Z SPECIALTIES'
+WARNING: Could not create COM object QBXMLRP.RequestProcessor. Error: Retrieving the COM class factory for component 
+with CLSID {2D0E74B6-021A-11D5-9054-00508BF70A94} failed due to the following error: 80040154 Class not registered 
+(Exception from HRESULT: 0x80040154 (REGDB_E_CLASSNOTREG)).
+WARNING: QBXMLRP2.RequestProcessor failed. Trying next QuickBooks SDK request processor if available. Error: QuickBooks
+ SDK connection opened, but BeginSession failed.
+
+Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the QuickBooks
+ user. If QuickBooks shows an app-certificate prompt, approve this app.
+
+By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often cannot 
+be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is working.
+
+Original error: Could not start QuickBooks.
+
+All available QuickBooks SDK request processors failed before the transaction could be sent.
+Last error: QuickBooks SDK connection opened, but BeginSession failed.
+Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the 
+QuickBooks user. If QuickBooks shows an app-certificate prompt, approve this app.
+By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often cannot 
+be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is working.
+Original error: Could not start QuickBooks.
+If the last error says "Could not start QuickBooks", open QuickBooks Desktop manually, open the Tanslin company file, 
+log in, then try again.
+At C:\Users\ABRAR\OneDrive\Documents\Quickbooks optimizer\scripts\import_po_to_quickbooks.ps1:559 char:5
++     throw @"
++     ~~~~~~~~
+    + CategoryInfo          : OperationStopped: (All available Q...then try again.:String) [], RuntimeException
+    + FullyQualifiedErrorId : All available QuickBooks SDK request processors failed before the transaction could be s 
+   ent.
+Last error: QuickBooks SDK connection opened, but BeginSession failed.
+    Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the Quick 
+   Books user. If QuickBooks shows an app-certificate prompt, approve this app.
+    By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often ca 
+   nnot be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is wor  
+  king.
+Original error: Could not start QuickBooks.
+    If the last error says "Could not start QuickBooks", open QuickBooks Desktop manually, open the Tanslin company fi 
+   le, log in, then try again.
+    at ChildProcess.<anonymous> (C:\Users\ABRAR\OneDrive\Desktop\Lindafashion-Automation\backend\app.js:952:31)
+    at ChildProcess.emit (node:events:519:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:304:5) {
+  code: 1,
+  output: "Checking network host '192.168.1.8' and share 'Tanslin  Able  Hansfull'...\n" +
+    'Company file is reachable: \\\\192.168.1.8\\Tanslin  Able  Hansfull\\QuickBook\\Tanslin 2025\\Tanslin 2025.QBW\n' +
+    'QuickBooks Desktop appears to be running.\n' +
+    "Creating Sales Order for PO P860014246A as QuickBooks customer 'PROFORMA A-Z SPECIALTIES'\n" +
+    'WARNING: Could not create COM object QBXMLRP.RequestProcessor. Error: Retrieving the COM class factory for component \r\n' +
+    'with CLSID {2D0E74B6-021A-11D5-9054-00508BF70A94} failed due to the following error: 80040154 Class not registered \r\n' +
+    '(Exception from HRESULT: 0x80040154 (REGDB_E_CLASSNOTREG)).\n' +
+    'WARNING: QBXMLRP2.RequestProcessor failed. Trying next QuickBooks SDK request processor if available. Error: QuickBooks\r\n' +
+    ' SDK connection opened, but BeginSession failed.\r\n' +
+    '\r\n' +
+    'Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the QuickBooks\r\n' +
+    ' user. If QuickBooks shows an app-certificate prompt, approve this app.\r\n' +
+    '\r\n' +
+    'By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often cannot \r\n' +
+    'be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is working.\r\n' +
+    '\r\n' +
+    'Original error: Could not start QuickBooks.\n' +
+    '\n' +
+    'All available QuickBooks SDK request processors failed before the transaction could be sent.\r\n' +
+    'Last error: QuickBooks SDK connection opened, but BeginSession failed.\r\n' +
+    'Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the \r\n' +
+    'QuickBooks user. If QuickBooks shows an app-certificate prompt, approve this app.\r\n' +
+    'By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often cannot \r\n' +
+    'be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is working.\r\n' +
+    'Original error: Could not start QuickBooks.\r\n' +
+    'If the last error says "Could not start QuickBooks", open QuickBooks Desktop manually, open the Tanslin company file, \r\n' +
+    'log in, then try again.\r\n' +
+    'At C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks optimizer\\scripts\\import_po_to_quickbooks.ps1:559 char:5\r\n' +
+    '+     throw @"\r\n' +
+    '+     ~~~~~~~~\r\n' +
+    '    + CategoryInfo          : OperationStopped: (All available Q...then try again.:String) [], RuntimeException\r\n' +
+    '    + FullyQualifiedErrorId : All available QuickBooks SDK request processors failed before the transaction could be s \r\n' +
+    '   ent.\r\n' +
+    'Last error: QuickBooks SDK connection opened, but BeginSession failed.\r\n' +
+    '    Make sure QuickBooks Desktop is already open, the Tanslin company file is open, and you are logged in as the Quick \r\n' +
+    '   Books user. If QuickBooks shows an app-certificate prompt, approve this app.\r\n' +
+    '    By default this script connects to the currently open QuickBooks company file because QuickBooks Pro 2011 often ca \r\n' +
+    '   nnot be started automatically by the SDK. Use -UseCompanyFilePathForSdkSession only after app authorization is wor  \r\n' +
+    '  king.\r\n' +
+    'Original error: Could not start QuickBooks.\r\n' +
+    '    If the last error says "Could not start QuickBooks", open QuickBooks Desktop manually, open the Tanslin company fi \r\n' +
+    '   le, log in, then try again.'
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+listening on port 2000
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+listening on port 2000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ enable debugging { debug: true }
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+listening on port 2000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ suppress logs { quiet: true }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ suppress logs { quiet: true }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ suppress logs { quiet: true }
+listening on port 2000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ override existing { override: true }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+listening on port 2000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ suppress logs { quiet: true }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ enable debugging { debug: true }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ enable debugging { debug: true }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+listening on port 2000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ suppress logs { quiet: true }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ enable debugging { debug: true }
+listening on port 2000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ suppress logs { quiet: true }
+Backend port 2000 is already in use. Leaving the existing server running.
+[32m[nodemon] clean exit - waiting for changes before restart[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node app.js`[39m
+◇ injected env (11) from .env // tip: ⌘ enable debugging { debug: true }
+listening on port 2000
+[csv-files] Clearing CSV upload folder
+[csv-files] Deleted 7 CSV files
+[csv-files] Reading CSV upload folder
+[csv-files] Returning 7 CSV files
+[upload-csv:1784060002372-26006] starting - Received upload request
+[upload-csv:1784060002372-26006] parsing - Parsed 26006 for D2-5299 峰峰饰品
+[upload-csv:1784060002372-26006] checking-vendor - Checking or creating vendor D2-5299 峰峰饰品 with shared EDI session
+[edi-session] Started shared EDI session at 2026-07-14T20:13:22.706Z
+[upload-csv:1784060002372-26006] vendor-ready - Vendor ready with agent code D2-5299 峰�
+[upload-csv:1784060002372-26006] uploading-file - Uploading CSV for PO 26006
+[upload-csv:1784060002372-26006] flagged - Flagged PO 26006: review flagged EDI HTML rows
+[upload-csv:1784060004578-26014] starting - Received upload request
+[upload-csv:1784060004578-26014] parsing - Parsed 26014 for Zou Yonghai
+[upload-csv:1784060004578-26014] checking-vendor - Checking or creating vendor Zou Yonghai with shared EDI session
+[upload-csv:1784060004578-26014] vendor-ready - Vendor ready with agent code ZOU YONGHAI
+[upload-csv:1784060004578-26014] uploading-file - Uploading CSV for PO 26014
+[upload-csv:1784060004578-26014] flagged - Flagged PO 26014: review flagged EDI HTML rows
+[upload-csv:1784060005915-26036] starting - Received upload request
+[upload-csv:1784060005915-26036] parsing - Parsed 26036 for B2-3752
+[upload-csv:1784060005915-26036] checking-vendor - Checking or creating vendor B2-3752 with shared EDI session
+[upload-csv:1784060005915-26036] vendor-ready - Vendor ready with agent code B2-3752B
+[upload-csv:1784060005915-26036] uploading-file - Uploading CSV for PO 26036
+[upload-csv:1784060005915-26036] done - Finished PO 26036
+[upload-csv:1784060007880-26038] starting - Received upload request
+[upload-csv:1784060007880-26038] parsing - Parsed 26038 for B2-3752B
+[upload-csv:1784060007880-26038] checking-vendor - Checking or creating vendor B2-3752B with shared EDI session
+[upload-csv:1784060007880-26038] vendor-ready - Vendor ready with agent code B2-3752B
+[upload-csv:1784060007880-26038] uploading-file - Uploading CSV for PO 26038
+[upload-csv:1784060007880-26038] done - Finished PO 26038
+[upload-csv:1784060009429-26072] starting - Received upload request
+[upload-csv:1784060009429-26072] parsing - Parsed 26072 for 春天饰品
+[upload-csv:1784060009429-26072] checking-vendor - Checking or creating vendor 春天饰品 with shared EDI session
+[upload-csv:1784060009429-26072] vendor-ready - Vendor ready with agent code 春天饰品
+[upload-csv:1784060009429-26072] uploading-file - Uploading CSV for PO 26072
+[upload-csv:1784060009429-26072] done - Finished PO 26072
+[upload-csv:1784060011094-26093] starting - Received upload request
+[upload-csv:1784060011094-26093] parsing - Parsed 26093 for 春天饰品
+[upload-csv:1784060011094-26093] checking-vendor - Checking or creating vendor 春天饰品 with shared EDI session
+[upload-csv:1784060011094-26093] vendor-ready - Vendor ready with agent code 春天饰品
+[upload-csv:1784060011094-26093] uploading-file - Uploading CSV for PO 26093
+[upload-csv:1784060011094-26093] done - Finished PO 26093
+[upload-csv:1784060012905-26102R] starting - Received upload request
+[upload-csv:1784060012905-26102R] parsing - Parsed 26102R for Zou Yonghai
+[upload-csv:1784060012905-26102R] checking-vendor - Checking or creating vendor Zou Yonghai with shared EDI session
+[upload-csv:1784060012905-26102R] vendor-ready - Vendor ready with agent code ZOU YONGHAI
+[upload-csv:1784060012905-26102R] uploading-file - Uploading CSV for PO 26102R
+[upload-csv:1784060012905-26102R] flagged - Flagged PO 26102R: review flagged EDI HTML rows
+[csv-files] Reading CSV upload folder
+[csv-files] Returning 1 CSV files
+[upload-csv:1784060324651-26014] starting - Received upload request
+[upload-csv:1784060324651-26014] parsing - Parsed 26014 for Zou Yonghai
+[upload-csv:1784060324651-26014] checking-vendor - Checking or creating vendor Zou Yonghai with shared EDI session
+[upload-csv:1784060324651-26014] vendor-ready - Vendor ready with agent code ZOU YONGHAI
+[upload-csv:1784060324651-26014] uploading-file - Uploading CSV for PO 26014
+[upload-csv:1784060324651-26014] flagged - Flagged PO 26014: review flagged EDI HTML rows
+Error: Checking network host '192.168.1.8' and share 'Tanslin  Able  Hansfull'...
+Company file is reachable: \\192.168.1.8\Tanslin  Able  Hansfull\QuickBook\Tanslin 2025\Tanslin 2025.QBW
+Checking for an active QuickBooks SDK session.
+QuickBooks open company: TANSLIN PREMIUM CO., INC.
+QuickBooks SDK session is ready.
+Skipping Sales Order creation for PO P860014320A
+Creating Invoice for PO P860014320A
+Invoice # is blank in the JSON, so QuickBooks will assign the next invoice number.
+Creating a standalone invoice from the PO lines.
+QuickBooks Invoice response saved: C:\Users\ABRAR\OneDrive\Documents\Quickbooks optimizer\data\quickbooks_responses\P860014320A-invoice-response.xml
+Printing QuickBooks invoice template 'AP Tanslin Invoice' to PDF.
+Started interactive QuickBooks print task 'PDF PROFORMA A-Z PO P 860014320A.pdf'.
+Activated QuickBooks window using title: TANSLIN PREMIUM CO., INC.  - QuickBooks Pro 2011(multi-user)(steven)
+Invoking QuickBooks File > Save as PDF.
+Found PDF save dialog: Save document as PDF
+Setting PDF save folder: C:\Users\ABRAR\Downloads
+Waiting 4 seconds for the PDF save folder to load.
+Found PDF save dialog: Save document as PDF
+Typing PDF file name: PROFORMA A-Z PO P 860014320A
+Timed out waiting for QuickBooks Save as PDF to create 'C:\Users\ABRAR\Downloads\PROFORMA A-Z PO P 860014320A.pdf'.
+At C:\Users\ABRAR\OneDrive\Documents\Quickbooks optimizer\scripts\save_quickbooks_current_invoice_pdf.ps1:435 char:5
++     throw "Timed out waiting for QuickBooks Save as PDF to create '$r ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Timed out waiti...60014320A.pdf'.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Timed out waiting for QuickBooks Save as PDF to create 'C:\Users\ABRAR\Downloads\PROFORM 
+   A A-Z PO P 860014320A.pdf'.
+WARNING: Invoice was created, but QuickBooks print/template automation failed: Interactive QuickBooks print task 'PDF 
+PROFORMA A-Z PO P 860014320A.pdf' failed with exit code 1.
+
+QuickBooks invoice was created, but PDF/printer automation failed: Interactive QuickBooks print task 'PDF PROFORMA A-Z 
+PO P 860014320A.pdf' failed with exit code 1.
+At C:\Users\ABRAR\OneDrive\Documents\Quickbooks optimizer\scripts\import_po_to_quickbooks.ps1:1268 char:9
++         throw "QuickBooks invoice was created, but PDF/printer automa ...
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (QuickBooks invo...th exit code 1.:String) [], RuntimeException
+    + FullyQualifiedErrorId : QuickBooks invoice was created, but PDF/printer automation failed: Interactive QuickBook 
+   s print task 'PDF PROFORMA A-Z PO P 860014320A.pdf' failed with exit code 1.
+    at ChildProcess.<anonymous> (C:\Users\ABRAR\OneDrive\Desktop\Lindafashion-Automation\backend\app.js:1022:31)
+    at ChildProcess.emit (node:events:519:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:304:5) {
+  code: 1,
+  output: "Checking network host '192.168.1.8' and share 'Tanslin  Able  Hansfull'...\n" +
+    'Company file is reachable: \\\\192.168.1.8\\Tanslin  Able  Hansfull\\QuickBook\\Tanslin 2025\\Tanslin 2025.QBW\n' +
+    'Checking for an active QuickBooks SDK session.\n' +
+    'QuickBooks open company: TANSLIN PREMIUM CO., INC.\n' +
+    'QuickBooks SDK session is ready.\n' +
+    'Skipping Sales Order creation for PO P860014320A\n' +
+    'Creating Invoice for PO P860014320A\n' +
+    'Invoice # is blank in the JSON, so QuickBooks will assign the next invoice number.\n' +
+    'Creating a standalone invoice from the PO lines.\n' +
+    'QuickBooks Invoice response saved: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks optimizer\\data\\quickbooks_responses\\P860014320A-invoice-response.xml\n' +
+    "Printing QuickBooks invoice template 'AP Tanslin Invoice' to PDF.\n" +
+    "Started interactive QuickBooks print task 'PDF PROFORMA A-Z PO P 860014320A.pdf'.\n" +
+    'Activated QuickBooks window using title: TANSLIN PREMIUM CO., INC.  - QuickBooks Pro 2011(multi-user)(steven)\n' +
+    'Invoking QuickBooks File > Save as PDF.\n' +
+    'Found PDF save dialog: Save document as PDF\n' +
+    'Setting PDF save folder: C:\\Users\\ABRAR\\Downloads\n' +
+    'Waiting 4 seconds for the PDF save folder to load.\n' +
+    'Found PDF save dialog: Save document as PDF\n' +
+    'Typing PDF file name: PROFORMA A-Z PO P 860014320A\n' +
+    "Timed out waiting for QuickBooks Save as PDF to create 'C:\\Users\\ABRAR\\Downloads\\PROFORMA A-Z PO P 860014320A.pdf'.\n" +
+    'At C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks optimizer\\scripts\\save_quickbooks_current_invoice_pdf.ps1:435 char:5\n' +
+    `+     throw "Timed out waiting for QuickBooks Save as PDF to create '$r ...\n` +
+    '+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n' +
+    "    + CategoryInfo          : OperationStopped: (Timed out waiti...60014320A.pdf'.:String) [], RuntimeException\n" +
+    "    + FullyQualifiedErrorId : Timed out waiting for QuickBooks Save as PDF to create 'C:\\Users\\ABRAR\\Downloads\\PROFORM \n" +
+    "   A A-Z PO P 860014320A.pdf'.\n" +
+    "WARNING: Invoice was created, but QuickBooks print/template automation failed: Interactive QuickBooks print task 'PDF \r\n" +
+    "PROFORMA A-Z PO P 860014320A.pdf' failed with exit code 1.\n" +
+    '\n' +
+    "QuickBooks invoice was created, but PDF/printer automation failed: Interactive QuickBooks print task 'PDF PROFORMA A-Z \r\n" +
+    "PO P 860014320A.pdf' failed with exit code 1.\r\n" +
+    'At C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks optimizer\\scripts\\import_po_to_quickbooks.ps1:1268 char:9\r\n' +
+    '+         throw "QuickBooks invoice was created, but PDF/printer automa ...\r\n' +
+    '+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n' +
+    '    + CategoryInfo          : OperationStopped: (QuickBooks invo...th exit code 1.:String) [], RuntimeException\r\n' +
+    '    + FullyQualifiedErrorId : QuickBooks invoice was created, but PDF/printer automation failed: Interactive QuickBook \r\n' +
+    "   s print task 'PDF PROFORMA A-Z PO P 860014320A.pdf' failed with exit code 1."
+}
+Error: Checking network host '192.168.1.8' and share 'Tanslin  Able  Hansfull'...
+Company file is reachable: \\192.168.1.8\Tanslin  Able  Hansfull\QuickBook\Tanslin 2025\Tanslin 2025.QBW
+Checking for an active QuickBooks SDK session.
+QuickBooks open company: TANSLIN PREMIUM CO., INC.
+QuickBooks SDK session is ready.
+Skipping Sales Order creation for PO P860014320A
+Creating Invoice for PO P860014320A
+Invoice # is blank in the JSON, so QuickBooks will assign the next invoice number.
+Creating a standalone invoice from the PO lines.
+QuickBooks Invoice response saved: C:\Users\ABRAR\OneDrive\Documents\Quickbooks optimizer\data\quickbooks_responses\P860014320A-invoice-response.xml
+Printing QuickBooks invoice template 'AP Tanslin Invoice' to PDF.
+Started interactive QuickBooks print task 'PDF PROFORMA A-Z PO P 860014320A.pdf'.
+Activated QuickBooks window using title: TANSLIN PREMIUM CO., INC.  - QuickBooks Pro 2011(multi-user)(steven)
+Invoking QuickBooks File > Save as PDF.
+Found PDF save dialog: Save document as PDF
+Setting PDF save folder: C:\Users\ABRAR\Downloads
+Waiting 4 seconds for the PDF save folder to load.
+Found PDF save dialog: Save document as PDF
+Typing PDF file name: PROFORMA A-Z PO P 860014320A
+QuickBooks invoice PDF saved: C:\Users\ABRAR\Downloads\PROFORMA A-Z PO P 860014320A.pdf
+Printing QuickBooks invoice template 'AP Tanslin Invoice' to 'Brother HL-L6200DW series Printer'.
+Started interactive QuickBooks print task 'Printer AP Tanslin Invoice'.
+Leaving Windows default printer unchanged; selecting 'Brother HL-L6200DW series Printer' inside the QuickBooks print dialog.
+Activated QuickBooks window using Win32 title: TANSLIN PREMIUM CO., INC.  - QuickBooks Pro 2011(multi-user)(steven)
+QuickBooks Create Invoices screen is already visible.
+Invoking QuickBooks File > Print command.
+Opening QuickBooks print-dialog printer dropdown.
+Selecting Brother HL-L6200DW from the QuickBooks printer dropdown.
+Confirming the QuickBooks print dialog.
+Clicking the QuickBooks print dialog Print button.
+QuickBooks invoice sent to printer: Brother HL-L6200DW series Printer
+Waiting for QuickBooks to release the invoice after printing.
+Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.
+WARNING: Saved failed QuickBooks request XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163430-request.xml
+WARNING: Saved failed QuickBooks response XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163430-response.xml
+WARNING: QuickBooks still has the invoice locked after printing/PDF save. Waiting 5 seconds before retrying template 
+'Tanslin Customer Sales Order' (2 of 6).
+Refreshing QuickBooks invoice before template retry 2 of 6.
+Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.
+WARNING: Saved failed QuickBooks request XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163437-request.xml
+WARNING: Saved failed QuickBooks response XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163437-response.xml
+WARNING: QuickBooks still has the invoice locked after printing/PDF save. Waiting 5 seconds before retrying template 
+'Tanslin Customer Sales Order' (3 of 6).
+Refreshing QuickBooks invoice before template retry 3 of 6.
+Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.
+WARNING: Saved failed QuickBooks request XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163443-request.xml
+WARNING: Saved failed QuickBooks response XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163443-response.xml
+WARNING: QuickBooks still has the invoice locked after printing/PDF save. Waiting 5 seconds before retrying template 
+'Tanslin Customer Sales Order' (4 of 6).
+Refreshing QuickBooks invoice before template retry 4 of 6.
+Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.
+WARNING: Saved failed QuickBooks request XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163449-request.xml
+WARNING: Saved failed QuickBooks response XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163449-response.xml
+WARNING: QuickBooks still has the invoice locked after printing/PDF save. Waiting 5 seconds before retrying template 
+'Tanslin Customer Sales Order' (5 of 6).
+Refreshing QuickBooks invoice before template retry 5 of 6.
+Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.
+WARNING: Saved failed QuickBooks request XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163456-request.xml
+WARNING: Saved failed QuickBooks response XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163456-response.xml
+WARNING: QuickBooks still has the invoice locked after printing/PDF save. Waiting 5 seconds before retrying template 
+'Tanslin Customer Sales Order' (6 of 6).
+Refreshing QuickBooks invoice before template retry 6 of 6.
+Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.
+WARNING: Saved failed QuickBooks request XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163502-request.xml
+WARNING: Saved failed QuickBooks response XML: C:\Users\ABRAR\OneDrive\Documents\Quickbooks 
+optimizer\data\quickbooks_responses\failed-20260714-163502-response.xml
+WARNING: Invoice was created, but QuickBooks print/template automation failed: QuickBooks accepted the SDK session, but
+ rejected the QBXML request.
+
+This usually means one of the QuickBooks names in the JSON does not exactly match QuickBooks, such as customer, item, 
+terms, rep, ship method, or class.
+
+Original error: QuickBooks rejected the QBXML transaction. statusCode=3175; severity=Error; message=There was an error 
+adding, modifying or deleting 31112-1784061226 because it is already in use.  QuickBooks error message: The transaction
+ could not be locked.
+
+QuickBooks invoice was created, but PDF/printer automation failed: QuickBooks accepted the SDK session, but rejected 
+the QBXML request.
+This usually means one of the QuickBooks names in the JSON does not exactly match QuickBooks, such as customer, item, 
+terms, rep, ship method, or class.
+Original error: QuickBooks rejected the QBXML transaction. statusCode=3175; severity=Error; message=There was an error 
+adding, modifying or deleting 31112-1784061226 because it is already in use.  QuickBooks error message: The 
+transaction could not be locked.
+At C:\Users\ABRAR\OneDrive\Documents\Quickbooks optimizer\scripts\import_po_to_quickbooks.ps1:1268 char:9
++         throw "QuickBooks invoice was created, but PDF/printer automa ...
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (QuickBooks invo... not be locked.:String) [], RuntimeException
+    + FullyQualifiedErrorId : QuickBooks invoice was created, but PDF/printer automation failed: QuickBooks accepted t 
+   he SDK session, but rejected the QBXML request.
+    This usually means one of the QuickBooks names in the JSON does not exactly match QuickBooks, such as customer, it 
+   em, terms, rep, ship method, or class.
+    Original error: QuickBooks rejected the QBXML transaction. statusCode=3175; severity=Error; message=There was an e 
+   rror adding, modifying or deleting 31112-1784061226 because it is already in use.  QuickBooks error message: The t  
+  ransaction could not be locked.
+    at ChildProcess.<anonymous> (C:\Users\ABRAR\OneDrive\Desktop\Lindafashion-Automation\backend\app.js:1022:31)
+    at ChildProcess.emit (node:events:519:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:304:5) {
+  code: 1,
+  output: "Checking network host '192.168.1.8' and share 'Tanslin  Able  Hansfull'...\n" +
+    'Company file is reachable: \\\\192.168.1.8\\Tanslin  Able  Hansfull\\QuickBook\\Tanslin 2025\\Tanslin 2025.QBW\n' +
+    'Checking for an active QuickBooks SDK session.\n' +
+    'QuickBooks open company: TANSLIN PREMIUM CO., INC.\n' +
+    'QuickBooks SDK session is ready.\n' +
+    'Skipping Sales Order creation for PO P860014320A\n' +
+    'Creating Invoice for PO P860014320A\n' +
+    'Invoice # is blank in the JSON, so QuickBooks will assign the next invoice number.\n' +
+    'Creating a standalone invoice from the PO lines.\n' +
+    'QuickBooks Invoice response saved: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks optimizer\\data\\quickbooks_responses\\P860014320A-invoice-response.xml\n' +
+    "Printing QuickBooks invoice template 'AP Tanslin Invoice' to PDF.\n" +
+    "Started interactive QuickBooks print task 'PDF PROFORMA A-Z PO P 860014320A.pdf'.\n" +
+    'Activated QuickBooks window using title: TANSLIN PREMIUM CO., INC.  - QuickBooks Pro 2011(multi-user)(steven)\n' +
+    'Invoking QuickBooks File > Save as PDF.\n' +
+    'Found PDF save dialog: Save document as PDF\n' +
+    'Setting PDF save folder: C:\\Users\\ABRAR\\Downloads\n' +
+    'Waiting 4 seconds for the PDF save folder to load.\n' +
+    'Found PDF save dialog: Save document as PDF\n' +
+    'Typing PDF file name: PROFORMA A-Z PO P 860014320A\n' +
+    'QuickBooks invoice PDF saved: C:\\Users\\ABRAR\\Downloads\\PROFORMA A-Z PO P 860014320A.pdf\n' +
+    "Printing QuickBooks invoice template 'AP Tanslin Invoice' to 'Brother HL-L6200DW series Printer'.\n" +
+    "Started interactive QuickBooks print task 'Printer AP Tanslin Invoice'.\n" +
+    "Leaving Windows default printer unchanged; selecting 'Brother HL-L6200DW series Printer' inside the QuickBooks print dialog.\n" +
+    'Activated QuickBooks window using Win32 title: TANSLIN PREMIUM CO., INC.  - QuickBooks Pro 2011(multi-user)(steven)\n' +
+    'QuickBooks Create Invoices screen is already visible.\n' +
+    'Invoking QuickBooks File > Print command.\n' +
+    'Opening QuickBooks print-dialog printer dropdown.\n' +
+    'Selecting Brother HL-L6200DW from the QuickBooks printer dropdown.\n' +
+    'Confirming the QuickBooks print dialog.\n' +
+    'Clicking the QuickBooks print dialog Print button.\n' +
+    'QuickBooks invoice sent to printer: Brother HL-L6200DW series Printer\n' +
+    'Waiting for QuickBooks to release the invoice after printing.\n' +
+    "Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.\n" +
+    'WARNING: Saved failed QuickBooks request XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163430-request.xml\n' +
+    'WARNING: Saved failed QuickBooks response XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163430-response.xml\n' +
+    'WARNING: QuickBooks still has the invoice locked after printing/PDF save. Waiting 5 seconds before retrying template \r\n' +
+    "'Tanslin Customer Sales Order' (2 of 6).\n" +
+    'Refreshing QuickBooks invoice before template retry 2 of 6.\n' +
+    "Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.\n" +
+    'WARNING: Saved failed QuickBooks request XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163437-request.xml\n' +
+    'WARNING: Saved failed QuickBooks response XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163437-response.xml\n' +
+    'WARNING: QuickBooks still has the invoice locked after printing/PDF save. Waiting 5 seconds before retrying template \r\n' +
+    "'Tanslin Customer Sales Order' (3 of 6).\n" +
+    'Refreshing QuickBooks invoice before template retry 3 of 6.\n' +
+    "Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.\n" +
+    'WARNING: Saved failed QuickBooks request XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163443-request.xml\n' +
+    'WARNING: Saved failed QuickBooks response XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163443-response.xml\n' +
+    'WARNING: QuickBooks still has the invoice locked after printing/PDF save. Waiting 5 seconds before retrying template \r\n' +
+    "'Tanslin Customer Sales Order' (4 of 6).\n" +
+    'Refreshing QuickBooks invoice before template retry 4 of 6.\n' +
+    "Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.\n" +
+    'WARNING: Saved failed QuickBooks request XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163449-request.xml\n' +
+    'WARNING: Saved failed QuickBooks response XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163449-response.xml\n' +
+    'WARNING: QuickBooks still has the invoice locked after printing/PDF save. Waiting 5 seconds before retrying template \r\n' +
+    "'Tanslin Customer Sales Order' (5 of 6).\n" +
+    'Refreshing QuickBooks invoice before template retry 5 of 6.\n' +
+    "Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.\n" +
+    'WARNING: Saved failed QuickBooks request XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163456-request.xml\n' +
+    'WARNING: Saved failed QuickBooks response XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163456-response.xml\n' +
+    'WARNING: QuickBooks still has the invoice locked after printing/PDF save. Waiting 5 seconds before retrying template \r\n' +
+    "'Tanslin Customer Sales Order' (6 of 6).\n" +
+    'Refreshing QuickBooks invoice before template retry 6 of 6.\n' +
+    "Switching QuickBooks invoice template to 'Tanslin Customer Sales Order'.\n" +
+    'WARNING: Saved failed QuickBooks request XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163502-request.xml\n' +
+    'WARNING: Saved failed QuickBooks response XML: C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks \r\n' +
+    'optimizer\\data\\quickbooks_responses\\failed-20260714-163502-response.xml\n' +
+    'WARNING: Invoice was created, but QuickBooks print/template automation failed: QuickBooks accepted the SDK session, but\r\n' +
+    ' rejected the QBXML request.\r\n' +
+    '\r\n' +
+    'This usually means one of the QuickBooks names in the JSON does not exactly match QuickBooks, such as customer, item, \r\n' +
+    'terms, rep, ship method, or class.\r\n' +
+    '\r\n' +
+    'Original error: QuickBooks rejected the QBXML transaction. statusCode=3175; severity=Error; message=There was an error \r\n' +
+    'adding, modifying or deleting 31112-1784061226 because it is already in use.  QuickBooks error message: The transaction\r\n' +
+    ' could not be locked.\n' +
+    '\n' +
+    'QuickBooks invoice was created, but PDF/printer automation failed: QuickBooks accepted the SDK session, but rejected \r\n' +
+    'the QBXML request.\r\n' +
+    'This usually means one of the QuickBooks names in the JSON does not exactly match QuickBooks, such as customer, item, \r\n' +
+    'terms, rep, ship method, or class.\r\n' +
+    'Original error: QuickBooks rejected the QBXML transaction. statusCode=3175; severity=Error; message=There was an error \r\n' +
+    'adding, modifying or deleting 31112-1784061226 because it is already in use.  QuickBooks error message: The \r\n' +
+    'transaction could not be locked.\r\n' +
+    'At C:\\Users\\ABRAR\\OneDrive\\Documents\\Quickbooks optimizer\\scripts\\import_po_to_quickbooks.ps1:1268 char:9\r\n' +
+    '+         throw "QuickBooks invoice was created, but PDF/printer automa ...\r\n' +
+    '+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n' +
+    '    + CategoryInfo          : OperationStopped: (QuickBooks invo... not be locked.:String) [], RuntimeException\r\n' +
+    '    + FullyQualifiedErrorId : QuickBooks invoice was created, but PDF/printer automation failed: QuickBooks accepted t \r\n' +
+    '   he SDK session, but rejected the QBXML request.\r\n' +
+    '    This usually means one of the QuickBooks names in the JSON does not exactly match QuickBooks, such as customer, it \r\n' +
+    '   em, terms, rep, ship method, or class.\r\n' +
+    '    Original error: QuickBooks rejected the QBXML transaction. statusCode=3175; severity=Error; message=There was an e \r\n' +
+    '   rror adding, modifying or deleting 31112-1784061226 because it is already in use.  QuickBooks error message: The t  \r\n' +
+    '  ransaction could not be locked.'
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

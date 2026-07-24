@@ -1,6 +1,8 @@
 .env
 node_modules/
 ediUpload/
+invoiceWork/
+data/gmail-oauth.json
 *.csv
 *.xlsx
 *.xls

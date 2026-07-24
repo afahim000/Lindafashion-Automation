@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {Fragment, useState} from 'react'
 
 const API_BASE = 'http://localhost:2000';
 
@@ -8,6 +8,111 @@ export default function PO(){
     const [status, setStatus] = useState('IDLE');
     const [error, setError] = useState('');
     const [isUploading, setIsUploading] = useState(false);
+    const [excelFiles, setExcelFiles] = useState([]);
+    const [isCreatingCsv, setIsCreatingCsv] = useState(false);
+    const [, setConversionResults] = useState(null);
+
+    function addExcelFiles(files)
+    {
+        const allowedExtensions = ['.xls', '.xlsx'];
+        const nextFiles = Array.from(files || [])
+            .filter((file)=> allowedExtensions.some((extension)=> file.name.toLowerCase().endsWith(extension)));
+
+        setExcelFiles((currentFiles)=> {
+            const seen = new Set(currentFiles.map((file)=> `${file.name}-${file.size}-${file.lastModified}`));
+            const uniqueNewFiles = nextFiles.filter((file)=> {
+                const key = `${file.name}-${file.size}-${file.lastModified}`;
+
+                if(seen.has(key))
+                {
+                    return false;
+                }
+
+                seen.add(key);
+                return true;
+            });
+
+            return [...currentFiles, ...uniqueNewFiles];
+        });
+    }
+
+    async function createCsvFiles()
+    {
+        if(excelFiles.length === 0)
+        {
+            return;
+        }
+
+        setError('');
+        setIsCreatingCsv(true);
+        setStatus('CREATING CSV FILES...');
+
+        try
+        {
+            const formData = new FormData();
+
+            for(const file of excelFiles)
+            {
+                formData.append('excelFiles', file);
+            }
+
+            const response = await fetch(`${API_BASE}/api/create-edi-csv`, {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if(!response.ok)
+            {
+                throw new Error(result.message || 'The Excel files could not be converted.');
+            }
+
+            setConversionResults(result);
+            setStatus(`CSV CREATED: ${result.successful} SUCCESS, ${result.failed} FAILED`);
+            await loadCsvFiles();
+        }
+        catch(error)
+        {
+            console.log(error);
+            setError(error.message);
+            setStatus('ERROR');
+        }
+        finally
+        {
+            setIsCreatingCsv(false);
+        }
+    }
+
+    async function clearCsvFiles()
+    {
+        setError('');
+        setStatus('CLEARING CSV FILES...');
+
+        try
+        {
+            const response = await fetch(`${API_BASE}/csv-files`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+
+            if(!response.ok)
+            {
+                throw new Error(result.message || 'Could not clear CSV files');
+            }
+
+            setExcelFiles([]);
+            setCsvFiles([]);
+            setConversionResults(null);
+            setCurrentFile('');
+            setStatus(`CLEARED ${result.deletedCount} CSV FILES`);
+        }
+        catch(error)
+        {
+            console.log(error);
+            setError(error.message);
+            setStatus('ERROR');
+        }
+    }
 
     async function loadCsvFiles()
     {
@@ -112,7 +217,7 @@ export default function PO(){
                     ...result,
                     status: result.status,
                     uploadStep: result.status,
-                    progressMessage: result.message || (result.status === 'flagged' ? `Flagged: ${result.redFlags.join(', ')}` : 'Finished')
+                    progressMessage: result.message || (result.status === 'flagged' ? 'Flagged: review EDI HTML rows' : 'Finished')
                 } : item));
             }
             catch(error)
@@ -134,29 +239,78 @@ export default function PO(){
     const completedCount = csvFiles.filter((file)=> file.status === 'done').length;
     const flaggedCount = csvFiles.filter((file)=> file.status === 'flagged').length;
 
+    function getFlagRowHtmlList(file)
+    {
+        if(!file.redFlagDetails)
+        {
+            return [];
+        }
+
+        return Array.from(new Set(file.redFlagDetails.map((flag)=> flag.rowHtml).filter(Boolean)));
+    }
+
     return(
         <>
             {error && <h2 style={{color: 'red'}}>{error}</h2>}
-            <div id="form-holder">
-                <div style={{paddingTop: '9px'}}>
-                    <p style={{fontSize : '30px'}}>CSV upload queue</p>
+            <div id="form-holder" className="po-page">
+                <div className="po-steps">
+                    <section className="po-step-card">
+                    <p className="po-step-title">Step 1: Excel to CSV</p>
+                    <div className="po-actions">
+                    <label htmlFor="excelFiles" className="po-file-label" style={{cursor: isCreatingCsv || isUploading ? 'not-allowed' : 'pointer'}}>
+                        Add Excel Files
+                    </label>
+                    <input
+                        type="file"
+                        id="excelFiles"
+                        accept=".xls,.xlsx"
+                        multiple
+                        onChange={(event)=> addExcelFiles(event.target.files)}
+                        disabled={isCreatingCsv || isUploading}
+                        style={{display: 'none'}}
+                    />
+                    <button type="button" onClick={clearCsvFiles} disabled={isCreatingCsv || isUploading}>Clear List</button>
+                    <button type="button" onClick={createCsvFiles} disabled={isCreatingCsv || excelFiles.length === 0}>Create CSV</button>
+                    </div>
+
+                    <div
+                        onDragOver={(event)=> event.preventDefault()}
+                        onDrop={(event)=> {
+                            event.preventDefault();
+                            addExcelFiles(event.dataTransfer.files);
+                        }}
+                        className="po-drop-zone"
+                    >
+                        Drop .xls or .xlsx files here
+                    </div>
+
+                    {excelFiles.length > 0 && <p className="po-muted">{excelFiles.length} Excel files selected</p>}
+                    </section>
+
+                    <section className="po-step-card">
+                    <p className="po-step-title">Step 2: CSV Upload Queue</p>
+                    <div className="po-actions">
                     <button type="button" onClick={loadCsvFiles} disabled={isUploading}>Load CSV Files</button>
                     <button type="button" onClick={startUploads} disabled={isUploading || csvFiles.length === 0}>Start Upload</button>
+                    </div>
+                    <div className="po-summary">
+                        <span>{csvFiles.length} CSV files loaded</span>
+                        <span>{completedCount} completed</span>
+                        <span>{flaggedCount} flagged</span>
+                    </div>
+                    </section>
                 </div>
 
-                <div>
-                    <h1 style={{display: 'inline-block'}}>STATUS:&nbsp;</h1>
-                    {status === 'IDLE' ? (<h1 style={{color: 'gray', display: 'inline-block'}}>IDLE</h1>) :
-                    status === 'ERROR' ? (<h1 style={{color: 'red', display: 'inline-block'}}>ERROR</h1>) :
-                    status === 'DONE' ? (<h1 style={{color: 'green', display: 'inline-block'}}>DONE</h1>) :
-                    (<h1 style={{color: 'blue', display: 'inline-block'}}>{status}</h1>)}
+                <div className="po-status-line">
+                    <strong>STATUS:</strong>
+                    {status === 'IDLE' ? (<span className="po-status-idle">IDLE</span>) :
+                    status === 'ERROR' ? (<span className="po-status-error">ERROR</span>) :
+                    status === 'DONE' ? (<span className="po-status-done">DONE</span>) :
+                    (<span className="po-status-active">{status}</span>)}
+                    {currentFile && <span>Current file: {currentFile}</span>}
                 </div>
 
-                <p style={{fontSize: '24px'}}>Completed: {completedCount} / {csvFiles.length}</p>
-                <p style={{fontSize: '24px'}}>Flagged: {flaggedCount}</p>
-                {currentFile && <p>Current file: {currentFile}</p>}
-
-                <table style={{width: '100%', borderCollapse: 'collapse'}}>
+                <table className="po-upload-table">
                     <thead>
                         <tr>
                             <th style={{textAlign: 'left', borderBottom: '1px solid #ccc'}}>Status</th>
@@ -171,8 +325,12 @@ export default function PO(){
                         </tr>
                     </thead>
                     <tbody>
-                        {csvFiles.map((file)=> (
-                            <tr key={file.fileName}>
+                        {csvFiles.map((file)=> {
+                            const flagRows = getFlagRowHtmlList(file);
+
+                            return(
+                            <Fragment key={file.fileName}>
+                            <tr>
                                 <td>{file.status}</td>
                                 <td>{file.poNumber}</td>
                                 <td>{file.vendor}</td>
@@ -180,10 +338,51 @@ export default function PO(){
                                 <td>{file.poDate}</td>
                                 <td>{file.xFactorDate}</td>
                                 <td>{file.progressMessage || file.uploadStep || ''}</td>
-                                <td>{file.redFlags ? file.redFlags.join(', ') : ''}</td>
+                                <td>
+                                    {flagRows.length > 0 ? 'Review flagged table below' : (file.redFlags ? file.redFlags.join(', ') : '')}
+                                </td>
                                 <td>{file.fileName}</td>
                             </tr>
-                        ))}
+                            {flagRows.length > 0 && (
+                                <tr className="po-flag-row">
+                                    <td colSpan="9">
+                                        <div className="edi-flag-preview">
+                                            <h2>{file.poNumber}</h2>
+                                            <div className="edi-flag-legend">
+                                                <span>LEGENDS</span>
+                                                <strong>RED COLOR UNDER:: PO# = PO Already Exists, VENDOR = FACTORY NOT SETUP, ITEM = EITHER ITEM NOT SETUP OR NOT IN PO</strong>
+                                            </div>
+                                            <div className="edi-flag-table-wrap">
+                                                <table className="edi-flag-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>PO #</th>
+                                                            <th>PDATE</th>
+                                                            <th>VEND</th>
+                                                            <th>ITEM#</th>
+                                                            <th>PO.QTY</th>
+                                                            <th>UNIT</th>
+                                                            <th>FOB</th>
+                                                            <th>EXT</th>
+                                                            <th>X-FACT</th>
+                                                            <th>ETA</th>
+                                                            <th>SLM</th>
+                                                            <th>TYP</th>
+                                                            <th>WH</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody dangerouslySetInnerHTML={{__html: flagRows.join('')}} />
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                            </Fragment>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

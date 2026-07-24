@@ -5,8 +5,10 @@
     "exceljs": "^4.4.0",
     "express": "^4.21.1",
     "fs": "^0.0.1-security",
+    "googleapis": "^160.0.0",
     "jsdom": "^25.0.1",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^7.0.13",
     "nodemon": "^3.1.7",
     "path": "^0.12.7",
     "puppeteer": "^23.6.1",
@@ -16,6 +18,7 @@
     "xlsx-populate": "^1.21.0"
   },
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon --ignore invoiceWork --ignore ediUpload app.js",
+    "test": "node tests/excelToEdiCsv.test.js && node tests/fedexShipping.test.js"
   }
 }

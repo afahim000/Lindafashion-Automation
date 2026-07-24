@@ -1,0 +1,6 @@
+{
+  "ignore": [
+    "invoiceWork/**",
+    "ediUpload/**"
+  ]
+}
