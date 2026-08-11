@@ -6,6 +6,7 @@ import PO from './PO.jsx'
 import MakeInvoice from './MakeInvoice.jsx'
 import QuickBooksOptimizer from './QuickBooksOptimizer.jsx'
 import ShippingQuote from './ShippingQuote.jsx'
+import TradeShowOrders from './TradeShowOrders.jsx'
 import Help from './Help.jsx'
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Route path="/make-invoice" element={<MakeInvoice />} />
       <Route path="/quickbooks-optimizer" element={<QuickBooksOptimizer />} />
       <Route path="/shipping-quote" element={<ShippingQuote />} />
+      <Route path="/trade-show-orders" element={<TradeShowOrders />} />
       <Route path="/help" element={<Help />} />
     </Routes>
     </>

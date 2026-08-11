@@ -10,6 +10,12 @@ const {createEdiCsvController} = require('./controllers/createEdiCsvController.j
 const {FedExShipping, contactPhoneFromPurchaseOrder} = require('./services/fedexShipping.js')
 const {buildUclQuoteEmail, sendUclQuoteEmail} = require('./services/shippingQuoteEmail.js')
 const {googleConnectionStatus, createAuthorizationUrl, completeAuthorization, sendGmailMessage} = require('./services/gmailOAuth.js')
+const {searchOrdersByCustomer, createAcknowledgmentPdf} = require('./services/ediOrderAcknowledgment.js')
+const {listPdaOrders, createPdaOrder} = require('./services/ediPdaOrders.js')
+const {suggestCustomerNumber} = require('./services/ediCustomerNumbers.js')
+const {REPRESENTATIVES, REPRESENTATIVE_CODES, readStore: readTradeShowRepresentatives, saveRepresentative, saveCustomerProfile} = require('./services/tradeShowRepresentatives.js')
+const {createCustomerProfile} = require('./services/ediCustomerProfiles.js')
+const {recordTradeShowOrder} = require('./services/tradeShowGoogleSheets.js')
 const {EDI_UPLOAD_FOLDER} = require('./config/ediConversionConfig.js')
 const fs = require('fs')
 const path = require('path')
@@ -43,6 +49,7 @@ const PORT = config.PORT;
 const ediUploadDirectory = EDI_UPLOAD_FOLDER;
 const completedDocsDirectory = path.join(__dirname, 'invoiceWork', 'completed-docs');
 const completedDocumentsIndexPath = path.join(completedDocsDirectory, 'completed-documents.json');
+const ediAcknowledgmentDirectory = path.join(__dirname, 'invoiceWork', 'edi-acknowledgments');
 const uclFormTemplatePath = process.env.UCL_FORM_TEMPLATE_PATH || 'C:\\Users\\ABRAR\\Downloads\\CK_TRADING_UCL_FORM.pdf';
 const uclFormScriptPath = path.join(__dirname, 'scripts', 'create_ucl_form.py');
 const uclLabelScriptPath = path.join(__dirname, 'scripts', 'create_ucl_labels.py');
@@ -89,6 +96,175 @@ app.post('/shipping-quote/send', async (req, res)=>
 
 app.get('/shipping-quote/google/status', (req, res)=> res.send(googleConnectionStatus()))
 
+app.get('/edi-orders/search', async (req, res)=>
+{
+    try
+    {
+        const customer = String(req.query.customer || '').trim();
+        const orders = await searchOrdersByCustomer(customer);
+        res.send({orders});
+    }
+    catch(error)
+    {
+        console.log(`[edi-orders/search] ${error.message}`);
+        res.status(400).json({error: true, message: error.message || 'Could not search EDI orders'});
+    }
+})
+
+app.get('/edi-pda-orders', async (req, res)=>
+{
+    try { res.send(await listPdaOrders()); }
+    catch(error)
+    {
+        console.log(`[edi-pda-orders] ${error.message}`);
+        res.status(400).json({error: true, message: error.message || 'Could not load PDA orders'});
+    }
+})
+
+app.get('/edi-customers/next-number', async (req, res)=>
+{
+    try { res.send(await suggestCustomerNumber(String(req.query.name || ''))); }
+    catch(error)
+    {
+        console.log(`[edi-customers/next-number] ${error.message}`);
+        res.status(400).json({error: true, message: error.message || 'Could not determine the next customer number'});
+    }
+})
+
+app.get('/trade-show-representatives', (req, res)=>
+{
+    try { res.send({options: REPRESENTATIVES, codes: REPRESENTATIVE_CODES, selections: readTradeShowRepresentatives()}); }
+    catch(error) { res.status(500).json({error: true, message: error.message}); }
+})
+
+app.put('/trade-show-representatives/:pdaOrderNumber', (req, res)=>
+{
+    try
+    {
+        const saved = saveRepresentative(req.params.pdaOrderNumber, req.body.representative);
+        res.send({status: 'saved', ...saved});
+    }
+    catch(error) { res.status(400).json({error: true, message: error.message}); }
+})
+
+app.post('/edi-pda-orders/:pdaOrderNumber/customer-profile', async (req, res)=>
+{
+    try
+    {
+        const orderNumber = String(req.params.pdaOrderNumber || '').trim();
+        const selection = readTradeShowRepresentatives()[orderNumber];
+        if(!selection?.representativeCode) throw new Error('Select a representative before creating the customer profile.');
+        const customer = await createCustomerProfile(req.body, selection.representativeCode);
+        saveCustomerProfile(orderNumber, customer);
+        res.send({status: 'created', customer, representative: selection.representative});
+    }
+    catch(error)
+    {
+        console.log(`[edi-pda-orders/customer-profile] ${error.message}`);
+        res.status(400).json({error: true, message: error.message || 'Could not create the EDI customer profile'});
+    }
+})
+
+app.post('/edi-pda-orders/:pdaOrderNumber/create', async (req, res)=>
+{
+    try
+    {
+        const result = await createPdaOrder(String(req.params.pdaOrderNumber || ''), config.EDI_PDA_TRADE_SHOW, String(req.body.customerCode || ''));
+        res.send({status: 'created', ...result});
+    }
+    catch(error)
+    {
+        console.log(`[edi-pda-orders/create] ${error.message}`);
+        res.status(400).json({error: true, message: error.message || 'Could not create PDA order'});
+    }
+})
+
+app.post('/edi-orders/:code/acknowledgment/prepare', async (req, res)=>
+{
+    try
+    {
+        const code = String(req.params.code || '').trim();
+        const copies = 1;
+        const acknowledgment = await createAcknowledgmentPdf(code, ediAcknowledgmentDirectory);
+        const renderDirectory = path.join(ediAcknowledgmentDirectory, acknowledgment.artifactId);
+        ensureDirectory(renderDirectory);
+        const outputPrefix = path.join(renderDirectory, 'page');
+        await execFileAsync(pdfToPpmPath, ['-png', '-r', '180', acknowledgment.savedPath, outputPrefix], {timeout: 120000, windowsHide: true});
+        const pages = fs.readdirSync(renderDirectory)
+            .filter((name)=> /^page-\d+\.png$/i.test(name))
+            .sort((left, right)=> Number(left.match(/\d+/)?.[0]) - Number(right.match(/\d+/)?.[0]));
+        if(!pages.length) throw new Error('The acknowledgment PDF could not be rendered for printing.');
+        fs.writeFileSync(path.join(renderDirectory, 'metadata.json'), JSON.stringify({code, copies, pages}, null, 2));
+        res.send({
+            status: 'ready',
+            code,
+            copies,
+            pagesPerCopy: pages.length,
+            printPageUrl: `/edi-orders/acknowledgment/print/${encodeURIComponent(acknowledgment.artifactId)}`,
+        });
+    }
+    catch(error)
+    {
+        console.log(`[edi-orders/acknowledgment] ${error.message}`);
+        res.status(400).json({error: true, message: error.message || 'Could not prepare acknowledgment'});
+    }
+})
+
+app.post('/edi-orders/:code/trade-show-sheet', async (req, res)=>
+{
+    try
+    {
+        const result = await recordTradeShowOrder({...req.body, code: String(req.params.code || '')});
+        res.send(result);
+    }
+    catch(error)
+    {
+        console.log(`[edi-orders/trade-show-sheet] ${error.message}`);
+        res.status(error.code === 'GOOGLE_NOT_CONNECTED' ? 503 : 400).json({error: true, message: error.message || 'Could not record the order to Google Sheets'});
+    }
+})
+
+app.get('/edi-orders/acknowledgment/image/:artifactId/:fileName', (req, res)=>
+{
+    const artifactId = path.basename(req.params.artifactId || '');
+    const fileName = path.basename(req.params.fileName || '');
+    if(!/^\d+-\d+$/.test(artifactId) || !/^page-\d+\.png$/i.test(fileName)) return res.status(404).send('Print page not found');
+    const filePath = path.join(ediAcknowledgmentDirectory, artifactId, fileName);
+    if(!fs.existsSync(filePath)) return res.status(404).send('Print page not found');
+    res.type('image/png').sendFile(filePath);
+})
+
+app.get('/edi-orders/acknowledgment/print/:artifactId', (req, res)=>
+{
+    try
+    {
+        const artifactId = path.basename(req.params.artifactId || '');
+        if(!/^\d+-\d+$/.test(artifactId)) return res.status(404).send('Acknowledgment not found');
+        const metadataPath = path.join(ediAcknowledgmentDirectory, artifactId, 'metadata.json');
+        if(!fs.existsSync(metadataPath)) return res.status(404).send('Acknowledgment not found');
+        const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+        const copies = 1;
+        const pageUrls = [];
+        for(let copy = 1; copy <= copies; copy += 1)
+        {
+            for(const page of metadata.pages)
+            {
+                pageUrls.push(`/edi-orders/acknowledgment/image/${encodeURIComponent(artifactId)}/${encodeURIComponent(page)}`);
+            }
+        }
+        res.type('html').send(`<!doctype html><html><head><meta charset="utf-8"><title>Print Acknowledgment ${metadata.code}</title><style>
+html,body{margin:0;background:#eef1f6;font-family:Arial,sans-serif}.toolbar{position:sticky;top:0;z-index:2;display:flex;gap:12px;align-items:center;padding:10px 14px;background:#11235e;color:#fff}.toolbar button{padding:9px 16px;border:0;border-radius:6px;background:#fff;color:#11235e;font-weight:700;cursor:pointer}.pages{width:min(100%,900px);margin:auto;background:#fff}.page{display:block;width:100%;height:auto;break-after:page;page-break-after:always}.page:last-child{break-after:auto;page-break-after:auto}@media print{@page{size:portrait;margin:0}.toolbar{display:none}.pages{width:100%;margin:0}.page{width:100%;max-height:100vh;object-fit:contain}}
+</style></head><body><div class="toolbar"><button onclick="window.print()">Print</button><button onclick="window.close()">Close</button><strong>Order ${metadata.code} acknowledgment — choose copies in the print dialog</strong></div><main class="pages">${pageUrls.map((url, index)=> `<img class="page" src="${url}" alt="Print page ${index + 1}">`).join('')}</main><script>
+const images=[...document.images];Promise.all(images.map((image)=>image.complete?Promise.resolve():new Promise((resolve)=>{image.addEventListener('load',resolve,{once:true});image.addEventListener('error',resolve,{once:true});}))).then(()=>setTimeout(()=>window.print(),300));
+</script></body></html>`);
+    }
+    catch(error)
+    {
+        console.log(`[edi-orders/acknowledgment/print] ${error.message}`);
+        res.status(500).send('Could not prepare acknowledgment print page');
+    }
+})
+
 app.get('/shipping-quote/google/connect', (req, res)=>
 {
     try { res.redirect(createAuthorizationUrl()); }
@@ -100,11 +276,11 @@ app.get('/shipping-quote/google/callback', async (req, res)=>
     try
     {
         const authorization = await completeAuthorization(String(req.query.code || ''), String(req.query.state || ''));
-        res.type('html').send(`<!doctype html><html><body style="font:18px Arial;padding:30px"><h1>Gmail connected</h1><p>${authorization.email} is ready to send UCL quote requests. You can close this window.</p><script>setTimeout(()=>window.close(),1500)</script></body></html>`);
+        res.type('html').send(`<!doctype html><html><body style="font:18px Arial;padding:30px"><h1>Google connected</h1><p>${authorization.email} is ready for Gmail and Google Sheets. You can close this window.</p><script>setTimeout(()=>window.close(),1500)</script></body></html>`);
     }
     catch(error)
     {
-        res.status(400).type('html').send(`<!doctype html><html><body style="font:18px Arial;padding:30px"><h1>Could not connect Gmail</h1><p>${String(error.message)}</p></body></html>`);
+        res.status(400).type('html').send(`<!doctype html><html><body style="font:18px Arial;padding:30px"><h1>Could not connect Google</h1><p>${String(error.message)}</p></body></html>`);
     }
 })
 

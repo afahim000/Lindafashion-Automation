@@ -52,6 +52,7 @@ export default function Home()
           <NavLink className="home-action" to="/make-invoice">Make Invoice</NavLink>
           <NavLink className="home-action" to="/quickbooks-optimizer">QuickBooks Optimizer</NavLink>
           <NavLink className="home-action" to="/shipping-quote">Get Shipping Quote</NavLink>
+          <NavLink className="home-action" to="/trade-show-orders">Trade Show Orders</NavLink>
           <NavLink className="home-action home-help-action" to="/help">How to Use / Instructions</NavLink>
         </nav>
         {networkStatus !== 'CONNECTED' && <div className="network-login-backdrop" role="presentation">

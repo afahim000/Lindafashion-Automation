@@ -8,7 +8,21 @@ const pendingStates = new Map();
 
 function oauthConfig(env = process.env)
 {
-    return {clientId: env.GOOGLE_CLIENT_ID || '', clientSecret: env.GOOGLE_CLIENT_SECRET || '', redirectUri: env.GOOGLE_REDIRECT_URI || 'http://localhost:2000/shipping-quote/google/callback'};
+    let fileConfig = {};
+    if(env.GOOGLE_OAUTH_CREDENTIALS_PATH)
+    {
+        try
+        {
+            const credentials = JSON.parse(fs.readFileSync(env.GOOGLE_OAUTH_CREDENTIALS_PATH, 'utf8'));
+            fileConfig = credentials.web || credentials.installed || {};
+        }
+        catch(error) { fileConfig = {}; }
+    }
+    return {
+        clientId: env.GOOGLE_CLIENT_ID || fileConfig.client_id || '',
+        clientSecret: env.GOOGLE_CLIENT_SECRET || fileConfig.client_secret || '',
+        redirectUri: env.GOOGLE_REDIRECT_URI || fileConfig.redirect_uris?.[0] || 'http://localhost:2000/shipping-quote/google/callback',
+    };
 }
 
 function oauthClient(env = process.env)
@@ -51,7 +65,13 @@ function createAuthorizationUrl(env = process.env)
     pendingStates.set(state, Date.now() + 10 * 60 * 1000);
     return client.generateAuthUrl({
         access_type: 'offline', prompt: 'consent', state,
-        scope: ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly'],
+        scope: [
+            'openid',
+            'email',
+            'https://www.googleapis.com/auth/gmail.send',
+            'https://www.googleapis.com/auth/spreadsheets',
+            'https://www.googleapis.com/auth/drive.readonly',
+        ],
     });
 }
 
@@ -65,8 +85,8 @@ async function completeAuthorization(code, state, env = process.env)
     const existing = readSavedAuthorization();
     if(!tokens.refresh_token && existing?.tokens?.refresh_token) tokens.refresh_token = existing.tokens.refresh_token;
     client.setCredentials(tokens);
-    const profile = await google.gmail({version: 'v1', auth: client}).users.getProfile({userId: 'me'});
-    const authorization = {email: profile.data.emailAddress || '', tokens, connectedAt: new Date().toISOString()};
+    const profile = await google.oauth2({version: 'v2', auth: client}).userinfo.get();
+    const authorization = {email: profile.data.email || '', tokens, connectedAt: new Date().toISOString()};
     writeSavedAuthorization(authorization);
     return authorization;
 }
@@ -85,6 +105,20 @@ function gmailClient(env = process.env)
     return {gmail: google.gmail({version: 'v1', auth: client}), email: saved.email};
 }
 
+function authorizedGoogleClient(env = process.env)
+{
+    const saved = readSavedAuthorization();
+    if(!saved?.tokens?.refresh_token)
+    {
+        const error = new Error('Connect Google before recording the order to the spreadsheet.');
+        error.code = 'GOOGLE_NOT_CONNECTED';
+        throw error;
+    }
+    const client = oauthClient(env);
+    client.setCredentials(saved.tokens);
+    return client;
+}
+
 function base64Url(value)
 {
     return Buffer.from(value, 'utf8').toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
@@ -99,4 +133,4 @@ async function sendGmailMessage({to, subject, text}, env = process.env)
     return {messageId: response.data.id, recipient: to, sender: email};
 }
 
-module.exports = {googleConnectionStatus, createAuthorizationUrl, completeAuthorization, sendGmailMessage};
+module.exports = {googleConnectionStatus, createAuthorizationUrl, completeAuthorization, sendGmailMessage, authorizedGoogleClient};

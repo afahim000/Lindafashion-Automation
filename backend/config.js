@@ -10,6 +10,7 @@ module.exports = {
   EDI_PASSWORD: process.env.EDI_PASSWORD,
   EDI_USER_COOKIE: process.env.EDI_USER_COOKIE,
   EDI_COMP_COOKIE: process.env.EDI_COMP_COOKIE,
+  EDI_PDA_TRADE_SHOW: process.env.EDI_PDA_TRADE_SHOW || 'LASVEGAS',
 
   MONITORING_FORM_DIR: process.env.MONITORING_FORM_DIR,
 };
