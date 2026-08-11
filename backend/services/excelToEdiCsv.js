@@ -1,10 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const XLSX = require('xlsx');
+const {pinyin} = require('pinyin-pro');
 const {
     EDI_UPLOAD_FOLDER,
     CSV_HEADERS,
     agentVendorMap,
+    vendorEnglishMap,
     poNormalization,
     poOverrides,
 } = require('../config/ediConversionConfig');
@@ -530,6 +532,84 @@ function createCsvRow(item, vendor)
     ];
 }
 
+function containsChineseCharacters(value)
+{
+    return /\p{Script=Han}/u.test(String(value === null || value === undefined ? '' : value));
+}
+
+function titleCaseWords(value)
+{
+    return String(value || '')
+        .trim()
+        .replace(/\s+/g, ' ')
+        .replace(/\b[a-z]/g, (letter)=> letter.toUpperCase());
+}
+
+function translateChineseText(value)
+{
+    const text = String(value === null || value === undefined ? '' : value);
+
+    if(!containsChineseCharacters(text))
+    {
+        return value;
+    }
+
+    return pinyin(text, {
+        toneType: 'none',
+        type: 'array',
+        nonZh: 'consecutive',
+    }).join(' ').replace(/\s+/g, ' ').trim();
+}
+
+function translateVendorName(vendor)
+{
+    const name = String(vendor || '').trim();
+
+    if(vendorEnglishMap[name])
+    {
+        return vendorEnglishMap[name];
+    }
+
+    if(!containsChineseCharacters(name))
+    {
+        return name;
+    }
+
+    const hasJewelrySuffix = name.endsWith('饰品');
+    const baseName = hasJewelrySuffix ? name.slice(0, -2) : name;
+    const translated = titleCaseWords(translateChineseText(baseName));
+    return `${translated}${hasJewelrySuffix ? ' Jewelry' : ''}`.trim();
+}
+
+function validateEnglishVendorName(vendor)
+{
+    const name = String(vendor || '').trim();
+
+    if(!name || name === 'UNKNOWN')
+    {
+        throw new Error('Vendor name could not be resolved to English. Add an English vendor mapping before creating the CSV.');
+    }
+
+    if(containsChineseCharacters(name) || !/^[A-Za-z0-9 .&'()/_-]+$/.test(name))
+    {
+        throw new Error(`Vendor name must use English characters only: ${name}`);
+    }
+
+    return name;
+}
+
+function validateCsvHasNoChineseCharacters(headers, rows)
+{
+    const offendingCell = [headers, ...rows]
+        .flat()
+        .find((value)=> containsChineseCharacters(value));
+
+    if(offendingCell !== undefined)
+    {
+        throw new Error(`CSV contains Chinese characters in value: ${offendingCell}`);
+    }
+}
+
 function escapeCsvValue(value)
 {
     const text = value === null || value === undefined ? '' : String(value);
@@ -544,9 +624,13 @@ function escapeCsvValue(value)
 
 function createCsvText(headers, rows)
 {
+    const translatedHeaders = headers.map(translateChineseText);
+    const translatedRows = rows.map((row)=> row.map(translateChineseText));
+    validateCsvHasNoChineseCharacters(translatedHeaders, translatedRows);
+
     return [
-        headers.map(escapeCsvValue).join(','),
-        ...rows.map((row)=> row.map(escapeCsvValue).join(',')),
+        translatedHeaders.map(escapeCsvValue).join(','),
+        ...translatedRows.map((row)=> row.map(escapeCsvValue).join(',')),
     ].join('\n');
 }
 
@@ -658,6 +742,7 @@ async function convertExcelBufferToEdiCsv({buffer, originalFilename, outputDirec
 
     order = applyPoOverrides(order, override);
     validateExtractedOrder(order);
+    order.vendor = validateEnglishVendorName(translateVendorName(order.vendor));
 
     const totalQuantity = order.items.reduce((sum, item)=> sum + Number(item.quantity), 0);
 
@@ -739,6 +824,11 @@ module.exports = {
     applyPoOverrides,
     validateExtractedOrder,
     createCsvRow,
+    containsChineseCharacters,
+    translateChineseText,
+    translateVendorName,
+    validateEnglishVendorName,
+    validateCsvHasNoChineseCharacters,
     escapeCsvValue,
     createCsvText,
     createOutputFilename,

@@ -13,6 +13,9 @@ const {
     normalizePo,
     formatDate,
     normalizeUnit,
+    translateChineseText,
+    translateVendorName,
+    validateEnglishVendorName,
     convertExcelBufferToEdiCsv,
 } = require('../services/excelToEdiCsv');
 
@@ -87,6 +90,28 @@ test('26102 normalizes to 26102R', () => {
 test('Chinese agent names map to English vendor names', async () => {
     const {result} = await convertFixture('A0064 file.xlsx', standardRows({agent: '梁过'}));
     assert.equal(result.vendor, 'Liang Guo');
+});
+
+test('vendor names permit English business punctuation but reject non-English text', () => {
+    assert.equal(validateEnglishVendorName("Linda's Jewelry & Co. (US)"), "Linda's Jewelry & Co. (US)");
+    assert.throws(()=> validateEnglishVendorName('\u68a6\u5a1c\u9970\u54c1'), /English characters only/);
+});
+
+test('approved Chinese vendor names translate to English before CSV creation', () => {
+    assert.equal(translateVendorName('\u4ebf\u8d44\u9970\u54c1'), 'Yi Zi Jewelry');
+    assert.equal(validateEnglishVendorName(translateVendorName('\u4ebf\u8d44\u9970\u54c1')), 'Yi Zi Jewelry');
+});
+
+test('Chinese characters in any CSV column are automatically converted to Pinyin', () => {
+    const csv = createCsvText(CSV_HEADERS, [createCsvRow({itemNumber: '\u7ea2\u8272', quantity: 12, unit: 'DZ'}, 'English Vendor')]);
+    assert.match(csv, /hong se,hong se/);
+    assert.doesNotMatch(csv, /\p{Script=Han}/u);
+});
+
+test('unknown Chinese jewelry vendors automatically become English-only names', () => {
+    assert.equal(translateVendorName('\u53d1\u5c1a\u79c0\u9970\u54c1'), 'Fa Shang Xiu Jewelry');
+    assert.equal(translateVendorName('\u68a6\u5a1c\u9970\u54c1'), 'Meng Na Jewelry');
+    assert.equal(translateChineseText('A-1 \u7ea2\u8272'), 'A-1 hong se');
 });
 
 test('Excel and string dates become YYYY-MM-DD', () => {

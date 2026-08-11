@@ -8,7 +8,9 @@ const config = require('./config');
 const { setTimeout } = require('timers');
 
 const BILL_EACH_ORDER_URL = '/edibs/oe/oe_bill_ordhdr.php';
+const ORDER_HEADER_URL = '/edibs/oe/oe_ordhdr.php';
 const FINAL_POST_PATH = '/edibs/oe/index.php';
+const PRINT_PICK_TICKET_CMD = 'ordhdr_piktik_wo_piktik';
 const CARTON_RELOAD_CMD = 'ordhdr_bill_ordhdr_wo_piktik_ctn';
 const FINAL_CMD = 'ordhdr_bill_ordhdr_wo_piktik';
 const FINAL_SUBCMD = 'sav_field';
@@ -100,6 +102,69 @@ async function login(page)
 async function openBillEachOrder(page)
 {
     await page.goto(`${config.EDI_BASE_URL}${BILL_EACH_ORDER_URL}`, {waitUntil: 'networkidle2'});
+}
+
+async function printPickTicket(page, orderNo)
+{
+    await page.goto(`${config.EDI_BASE_URL}${ORDER_HEADER_URL}?code=${encodeURIComponent(orderNo)}`, {
+        waitUntil: 'networkidle2',
+        timeout: 45000,
+    });
+
+    const result = await page.evaluate(async ({action, order, command})=> {
+        const liveForm = document.querySelector('form#form1') || document.querySelector('form');
+
+        if(!liveForm)
+        {
+            throw new Error('Live order form was not found');
+        }
+
+        const formData = new FormData(liveForm);
+        formData.set('code', order);
+        formData.set('cmd', command);
+        formData.set('subcmd', '');
+        formData.set('ordhdrs_id', order);
+        formData.set('new_ordhdrs_id', order);
+        formData.set('sel_piktik_typ', 'PIKTIK');
+        formData.set('reprint_flg', 'f');
+
+        const response = await fetch(action, {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin',
+            cache: 'no-store',
+        });
+
+        // Consume the response so the server-side print operation has completed
+        // before the invoice form is requested.
+        await response.text();
+
+        return {
+            ok: response.ok,
+            status: response.status,
+        };
+    }, {
+        action: `${config.EDI_BASE_URL}${FINAL_POST_PATH}`,
+        order: String(orderNo),
+        command: PRINT_PICK_TICKET_CMD,
+    }).catch((error)=> ({
+        ok: false,
+        status: 0,
+        error: error.message,
+    }));
+
+    if(!result.ok || result.status !== 200)
+    {
+        const detail = result.error ? `: ${result.error}` : ` (HTTP ${result.status || 'no response'})`;
+        throw new Error(`Pick ticket could not be printed for order ${orderNo}${detail}`);
+    }
+}
+
+async function openInvoiceOrder(page, orderNo)
+{
+    await printPickTicket(page, orderNo);
+    await openBillEachOrder(page);
+    return applyFilter(page, orderNo);
 }
 
 async function getContentsFrame(page)
@@ -711,9 +776,8 @@ async function submitInvoiceJsonAndGenerateDocumentsInner({orderNo, totalCartons
         logStep(jobId, 'logging into EDI');
         await login(page);
         logStep(jobId, 'opening Bill Each Order');
-        await openBillEachOrder(page);
-        logStep(jobId, `filtering order ${orderNo}`);
-        const invoicePage = await applyFilter(page, orderNo);
+        logStep(jobId, `printing pick ticket for order ${orderNo}`);
+        const invoicePage = await openInvoiceOrder(page, orderNo);
         await setCartonsAndReload(invoicePage, orderNo, totalCartons);
         await ensureInvoiceRowsLoaded(invoicePage, orderNo);
         await setBilledFreight(invoicePage, shippingCost);
@@ -829,6 +893,9 @@ function chatGptInstructions(shippingCost = '0.00')
         '* The total missing dozens are usually written at the bottom of the paper/page.',
         '* For each highlighted item, inspect whether it is fully missing or only partially shipped.',
         '* If an item is crossed out, marked missing, or clearly fully missing, set shipped dozens to `0`.',
+        '* Only set an item to `0` when its pictured item number matches exactly one item number in `row_map.json`.',
+        '* If a pictured missing or crossed-out item number is absent from `row_map.json`, assume it was already removed from the system. Do not modify another row in its place.',
+        '* Never match a missing item to an EDI row by page position, row position, proximity, or because later items appear shifted.',
         '* If a handwritten shipped quantity is written next to the item, use that as `shipDz`.',
         '* If a handwritten missing quantity is written instead, calculate `shipDz = orderedDz - missingDz`.',
         '* If an item is not highlighted and has no handwritten correction, use the ordered quantity from `row_map.json` as shipped dozens.',
@@ -881,6 +948,7 @@ function chatGptInstructions(shippingCost = '0.00')
         'Validation:',
         '',
         '* Every item from the picture that is modified must match exactly one item number in `row_map.json`.',
+        '* A pictured missing item that is absent from `row_map.json` requires no quantity change and is not an error by itself; add a warning that it appears to have already been removed.',
         '* Do not guess if an item number is unclear.',
         '* Final shipped dozens must equal the sum of all final `DNUMQTYSHIP_#` values.',
         '* Total amount must equal shipped dozens times each row’s unit price.',
@@ -995,8 +1063,7 @@ async function getInvoiceUclData(orderNo, totalCartons)
     try
     {
         await login(page);
-        await openBillEachOrder(page);
-        const invoicePage = await applyFilter(page, orderNo);
+        const invoicePage = await openInvoiceOrder(page, orderNo);
         await setCartonsAndReload(invoicePage, orderNo, totalCartons);
         await ensureInvoiceRowsLoaded(invoicePage, orderNo);
         return await extractUclDataFromInvoicePage(invoicePage, {}, totalCartons);
@@ -1027,9 +1094,8 @@ async function prepareInvoicePackageInner({orderNo, totalCartons, shippingCost, 
         logStep(jobId, 'logging into EDI');
         await login(page);
         logStep(jobId, 'opening Bill Each Order');
-        await openBillEachOrder(page);
-        logStep(jobId, `filtering order ${orderNo}`);
-        const invoicePage = await applyFilter(page, orderNo);
+        logStep(jobId, `printing pick ticket for order ${orderNo}`);
+        const invoicePage = await openInvoiceOrder(page, orderNo);
         logStep(jobId, `setting cartons ${totalCartons}`);
         await setCartonsAndReload(invoicePage, orderNo, totalCartons);
 
@@ -1141,8 +1207,7 @@ async function submitInvoiceJsonInner({orderNo, totalCartons, shippingCost, chat
     try
     {
         await login(page);
-        await openBillEachOrder(page);
-        const invoicePage = await applyFilter(page, orderNo);
+        const invoicePage = await openInvoiceOrder(page, orderNo);
         await setCartonsAndReload(invoicePage, orderNo, totalCartons);
         await ensureInvoiceRowsLoaded(invoicePage, orderNo);
         await setBilledFreight(invoicePage, shippingCost);
@@ -1185,9 +1250,8 @@ async function printInvoiceDocumentInner({orderNo, totalCartons, type})
         logStep(`print-${type}`, `logging into EDI for order ${orderNo}`);
         await login(page);
         logStep(`print-${type}`, 'opening Bill Each Order');
-        await openBillEachOrder(page);
-        logStep(`print-${type}`, 'filtering order');
-        const invoicePage = await applyFilter(page, orderNo);
+        logStep(`print-${type}`, 'printing pick ticket and filtering order');
+        const invoicePage = await openInvoiceOrder(page, orderNo);
         logStep(`print-${type}`, 'triggering EDI print');
         const result = await printLoadedInvoicePage(invoicePage, orderNo, type);
         logStep(`print-${type}`, 'downloaded generated EDI PDF');
@@ -1680,9 +1744,8 @@ async function buildInvoiceExcelInner({orderNo})
         logStep(jobId, `logging into EDI for order ${orderNo}`);
         await login(page);
         logStep(jobId, 'opening Bill Each Order');
-        await openBillEachOrder(page);
-        logStep(jobId, 'filtering order');
-        const invoicePage = await applyFilter(page, orderNo);
+        logStep(jobId, 'printing pick ticket and filtering order');
+        const invoicePage = await openInvoiceOrder(page, orderNo);
         const titleParts = await extractOrderPageFileParts(invoicePage, orderNo);
         const rawExcelPath = path.join(jobDir, 'raw_invoice.xls');
 

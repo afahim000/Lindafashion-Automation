@@ -18,6 +18,13 @@ const agentVendorMap = {
     '郭海燕': 'Guo Haiyan',
 };
 
+// Approved business-name translations used before the English-only CSV check.
+// Keep these explicit so an automatic transliteration cannot create the wrong
+// vendor record in EDI.
+const vendorEnglishMap = {
+    '亿资饰品': 'Yi Zi Jewelry',
+};
+
 const poOverrides = {
     '26014': {
         orderDate: '2026-05-09',
@@ -90,6 +97,7 @@ module.exports = {
     EDI_UPLOAD_FOLDER,
     poNormalization,
     agentVendorMap,
+    vendorEnglishMap,
     poOverrides,
     CSV_HEADERS,
 };

@@ -50,7 +50,9 @@ const ediUploadDirectory = EDI_UPLOAD_FOLDER;
 const completedDocsDirectory = path.join(__dirname, 'invoiceWork', 'completed-docs');
 const completedDocumentsIndexPath = path.join(completedDocsDirectory, 'completed-documents.json');
 const ediAcknowledgmentDirectory = path.join(__dirname, 'invoiceWork', 'edi-acknowledgments');
-const uclFormTemplatePath = process.env.UCL_FORM_TEMPLATE_PATH || 'C:\\Users\\ABRAR\\Downloads\\CK_TRADING_UCL_FORM.pdf';
+// Keep the default UCL template with the server so document generation does
+// not depend on a user's Downloads folder. Deployments can still override it.
+const uclFormTemplatePath = process.env.UCL_FORM_TEMPLATE_PATH || path.join(__dirname, 'assets', 'CK_TRADING_UCL_FORM.pdf');
 const uclFormScriptPath = path.join(__dirname, 'scripts', 'create_ucl_form.py');
 const uclLabelScriptPath = path.join(__dirname, 'scripts', 'create_ucl_labels.py');
 const uclLabelLogoPath = path.join(__dirname, 'assets', 'linda-fashion-logo.jpg');
